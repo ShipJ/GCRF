@@ -1,5 +1,5 @@
 import pandas as pd
-import gzip
+import tarfile
 
 
 def process_raw(path, target):
@@ -11,9 +11,9 @@ def process_raw(path, target):
     :param target: string - file path to save processed data.
     :return: None.
     """
-    unzip = gzip.open(source, 'r')
-    for file in unzip:
-        print "Reading %s ..." % unzip.name
+    tar = tarfile.open(source, 'r')
+    for file in tar:
+        print "Reading %s ..." % tar.name
 
         df = pd.DataFrame.from_csv(path+file.name, sep='\t', header=None).reset_index()
         df.columns = ['datetime', 'source', 'target', 'activity', 'duration']
