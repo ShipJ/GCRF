@@ -1,21 +1,28 @@
 import pandas as pd
 import tarfile
+import zipfile
+import glob
+import sys
+import os
 
 
-def process_raw(path, target):
+def process_raw(source, target):
     """
     From raw zip/tar files containing CDR data, extract tsv's,
     split files by timestamp, store in separate files.
 
-    :param path: string - file path to raw data.
+    :param source: string - file path to raw data.
     :param target: string - file path to save processed data.
+    :param country: string - country code.
+
     :return: None.
     """
     tar = tarfile.open(source, 'r')
+
     for file in tar:
         print "Reading %s ..." % tar.name
 
-        df = pd.DataFrame.from_csv(path+file.name, sep='\t', header=None).reset_index()
+        df = pd.DataFrame.from_csv(source+file.name, sep='\t', header=None).reset_index()
         df.columns = ['datetime', 'source', 'target', 'activity', 'duration']
 
         # Split file by timestamp
@@ -72,6 +79,7 @@ if __name__ == '__main__':
     data_set = get_data_set()
 
     # Grab from source, process, save to target
-    source = '../../data/raw/%s/SET%s.zip' % (country, data_set)
-    target = '../../data/processed/%s/timestamp/' % country
+    source = '../../data/raw/%s/CDR%s.zip' % (country, data_set)
+    target = '../../data/processed/%s/CDR/timestamp/' % country
+
     process_raw(source, target)
