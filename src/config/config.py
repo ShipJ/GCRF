@@ -40,6 +40,7 @@ def get_constants(country):
         print "Please type the country abbreviation (lower case): "
         return get_constants(country)
 
+
 def get_adj_matrix(country):
     """
         Return volume and duration adjacency matrices for requested country.
