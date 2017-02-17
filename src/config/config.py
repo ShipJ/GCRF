@@ -1,3 +1,5 @@
+import numpy as np
+
 """
 This file contains various functions that used by various scripts, as well as providing constant values for
 different countries - i.e. data that will not change.
@@ -34,6 +36,21 @@ def get_constants(country):
     elif country == 'sen':
         constants = {'country': 'sen', 'num_towers': 1668, 'hours': 8733}
         return constants
+    else:
+        print "Please type the country abbreviation (lower case): "
+        return get_constants(country)
+
+def get_adj_matrix(country):
+    """
+        Return constant values for the cdr data set for each country.
+
+        :param country: str - country code.
+        :return:
+        """
+    if country == 'civ':
+        return np.genfromtxt('../../data/processed/civ/cdr/staticmetrics/adj_matrix_vol.csv')
+    elif country == 'sen':
+        return np.genfromtxt('../../data/processed//cdr/staticmetrics/adj_matrix_vol.csv')
     else:
         print "Please type the country abbreviation (lower case): "
         return get_constants(country)

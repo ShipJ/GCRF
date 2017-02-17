@@ -25,10 +25,10 @@ rapid_2 = dhs.groupby('ID_2')['rapidtest'].mean().reset_index()
 rapid_3 = dhs.groupby('ID_3')['rapidtest'].mean().reset_index()
 rapid_4 = dhs.groupby('ID_4')['rapidtest'].mean().reset_index()
 
-introversion_1 = pd.DataFrame(pd.read_csv(path+'/CDR/StaticMetrics/Introversion/introversion_adm1.csv'))
-introversion_2 = pd.DataFrame(pd.read_csv(path+'/CDR/StaticMetrics/Introversion/introversion_adm2.csv'))
-introversion_3 = pd.DataFrame(pd.read_csv(path+'/CDR/StaticMetrics/Introversion/introversion_adm3.csv'))
-introversion_4 = pd.DataFrame(pd.read_csv(path+'/CDR/StaticMetrics/Introversion/introversion_adm4.csv'))
+introversion_1 = pd.DataFrame(pd.read_csv(path+'/CDR/staticmetrics/Introversion/introversion_adm1.csv'))
+introversion_2 = pd.DataFrame(pd.read_csv(path+'/CDR/staticmetrics/Introversion/introversion_adm2.csv'))
+introversion_3 = pd.DataFrame(pd.read_csv(path+'/CDR/staticmetrics/Introversion/introversion_adm3.csv'))
+introversion_4 = pd.DataFrame(pd.read_csv(path+'/CDR/staticmetrics/Introversion/introversion_adm4.csv'))
 
 for i in np.setdiff1d(introversion_3['Adm_3'], blood_3['ID_3']):
     introversion_3 = introversion_3[introversion_3['Adm_3'] != i]

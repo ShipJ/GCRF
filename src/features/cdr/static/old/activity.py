@@ -88,4 +88,4 @@ if __name__ == "__main__":
     total_activity['Dur_out'] = duration_out
 
     # # Save results
-    # total_activity.to_csv(path+'StaticMetrics/Activity/total_activity.csv', index=None)
+    # total_activity.to_csv(path+'staticmetrics/Activity/total_activity.csv', index=None)

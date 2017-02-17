@@ -53,10 +53,10 @@ if __name__ == "__main__":
     #                 if w == 0:
     #                     m += 1
 
-    adj_matrix = np.genfromtxt(path+'/StaticMetrics/Other/adj_matrix.csv')
+    adj_matrix = np.genfromtxt(path+'/staticmetrics/Other/adj_matrix.csv')
     wherenan = np.where(np.isnan(adj_matrix))
     adj_matrix[wherenan] = 0
-    total_activity = np.genfromtxt(path+'/StaticMetrics/Activity/total_activity.csv', delimiter=',')
+    total_activity = np.genfromtxt(path+'/staticmetrics/Activity/total_activity.csv', delimiter=',')
     q_matrix = np.array(adj_matrix / total_activity[:, 1, None])
 
     # Compute degree vector
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     f = np.vectorize(f)
     log_q_matrix = f(q_matrix)
 
-    # np.savetxt(path+'/StaticMetrics/Other/adj_matrix.csv', adj_matrix, delimiter=',')
-    np.savetxt(path+'/StaticMetrics/Other/deg_vector.csv', deg_vector, delimiter=',')
-    np.savetxt(path+'/StaticMetrics/Other/q_matrix.csv', q_matrix, delimiter=',')
-    np.savetxt(path+'/StaticMetrics/Other/log_q_matrix.csv', log_q_matrix, delimiter=',')
+    # np.savetxt(path+'/staticmetrics/Other/adj_matrix.csv', adj_matrix, delimiter=',')
+    np.savetxt(path+'/staticmetrics/Other/deg_vector.csv', deg_vector, delimiter=',')
+    np.savetxt(path+'/staticmetrics/Other/q_matrix.csv', q_matrix, delimiter=',')
+    np.savetxt(path+'/staticmetrics/Other/log_q_matrix.csv', log_q_matrix, delimiter=',')

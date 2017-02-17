@@ -17,7 +17,7 @@ all['Entropy'] = entropy
 all['Introversion'] = introversion
 all['Med_degree'] = med_degree
 
-cdr_adm = pd.DataFrame(pd.read_csv(path+'/Data/IvoryCoast/CDR/CellTowers/CDR_Adm_1234.csv',
+cdr_adm = pd.DataFrame(pd.read_csv(path+'/Data/IvoryCoast/CDR/celltowers/CDR_Adm_1234.csv',
                                    usecols=['CellTowerID', 'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
 
 
