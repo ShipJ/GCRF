@@ -3,12 +3,11 @@ import numpy as np
 import os
 import scipy.sparse as sparse
 from src.config import config
-import sys
 
 
 def adj_matrix(source, target, country):
     """
-    From time-stamped data files, compute adjacency matrix: ~
+    From time-stamped data files, compute adjacency matrix: runtime {3m, 15m}
 
     :param source: string - file path to raw data.
     :param target: string - file path to save processed data.
@@ -19,9 +18,6 @@ def adj_matrix(source, target, country):
 
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
-    print num_towers
-
-    sys.exit()
 
     # A 'coo' matrix is a coordinate based sparse matrix (efficient/fast)
     coo_vol = sparse.coo_matrix((num_towers, num_towers))
