@@ -7,6 +7,7 @@ import sklearn.metrics as sk
 import networkx as nx
 
 
+sys.exit()
 
 
 if __name__ == 'main':

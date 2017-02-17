@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import scipy.sparse as sparse
+from src.config import config
 
 
 def adj_matrix(source, target, country):
@@ -37,26 +38,8 @@ def adj_matrix(source, target, country):
     np.savetxt(target+'/adj_matrix_dur.csv', coo_dur.todense().reshape(num_towers, num_towers), delimiter=',')
 
 
-def get_country():
-    """
-    Ask user for country code.
-
-    :return: str - country for which there is data.
-    """
-    print "Process data for which country? ['sen': Senegal, 'civ': Ivory Coast]: "
-    input_country = raw_input()
-    if input_country == 'sen':
-        country = 'sen'
-    elif input_country == 'civ':
-        country = 'civ'
-    else:
-        print "Please type the country abbreviation (lower case): "
-        return get_country()
-    return country
-
-
 if __name__ == '__main__':
-    country = get_country()
+    country = config.get_country()
     source = '../../data/interim/%s/cdr/timestamp/' % country
     target = '../../data/processed/%s/cdr/StaticMetrics' % country
     adj_matrix(source, target, country)
