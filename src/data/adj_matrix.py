@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import scipy.sparse as sparse
+import sys
 
 
 def adj_matrix(source, target, country):
@@ -29,14 +30,12 @@ def adj_matrix(source, target, country):
         missing = np.where(cdr == -1)
         # Convert to imaginary cell tower ID (this is not useful, but aids processing)
         cdr[missing] = num_towers-1
-
         coo_vol += sparse.coo_matrix((cdr[:, 2], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
-        coo_dur += sparse.coo_matrix((cdr[:, 2], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
+        coo_dur += sparse.coo_matrix((cdr[:, 3], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
 
     # Sparse to dense matrix (i.e. adjacency matrix)
-    coo_vol.todense(), coo_dur.todense()
-    np.savetxt(target+'adj_matrix_vol.csv', coo_vol, delimiter=',')
-    np.savetxt(target+'adj_matrix_dur.csv', coo_dur, delimiter=',')
+    np.savetxt(target+'/adj_matrix_vol.csv', coo_vol.todense().reshape(num_towers, num_towers), delimiter=',')
+    np.savetxt(target+'/adj_matrix_dur.csv', coo_dur.todense().reshape(num_towers, num_towers), delimiter=',')
 
 
 def get_country():
