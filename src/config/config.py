@@ -22,6 +22,12 @@ def get_country():
 
 
 def get_constants(country):
+    """
+    Return constant values for the cdr data set for each country.
+
+    :param country: str - country code.
+    :return:
+    """
     if country == 'civ':
         constants = {'country': 'civ', 'num_towers': 1240, 'hours': 3278}
         return constants
