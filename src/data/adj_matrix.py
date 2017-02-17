@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import os
 import scipy.sparse as sparse
-import sys
 
 
 def adj_matrix(source, target, country):
