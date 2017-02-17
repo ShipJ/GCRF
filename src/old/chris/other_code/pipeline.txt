@@ -1,0 +1,46 @@
+first make sure you get all the scripts fresh from dropbox as I have updated
+a few of them.
+
+Use sen_aggregate.py (civ_aggregate.py) to create total_vol.npy
+
+sen1.py (civ1.py) create a number of files, but they also do a bunch of other
+things not necessary and have not been written in the same way as the rest of
+the scripts so skip this step for now. I've included the files they produce on
+Dropbox.
+
+If you want you can try to reproduce the Senegal wealth index by using the
+example in wealth_index.R, or skip as the ouput is already on Dropbox.
+Don't worry about repeating for Nigeria at the moment as we first need to find
+the boundary shapefiles.
+
+The files needed for the next steps can be found on Dropbox
+- data/*/telco
+    bts_xzero.csv
+    bts_hex1000_labels.csv
+    hex1000_bts_capital_centroids.csv
+    hex1000_bts_centroids.csv
+    hex1000_bts_noncapital_centroids.csv
+- data/*/geo
+    CIV_adm.zip
+    CIV14adjv1_utm30.tif.zip
+    grid_points_500.csv
+    hex_grid_1000.csv
+- data/*/poverty
+    dhs_cluster_wealth.csv
+
+then if config.py and the directory tree are set up properly you should be
+able to run theses scripts:
+
+python bts_aggregation.py sen hex 1000
+python radiation.py sen hex 1000
+python gravity.py sen hex 1000
+python features2.py sen hex 1000
+python sampling.py sen
+python spatial_lag.py sen
+
+then use modelling.R to produce the final model output
+run this interactively in Rstudio or the like
+replace data_dir on line 70
+
+then for Ivory Coast repeat above replacing 'sen' with 'civ' and in modelling.R
+also replace the loc_tag on line 71 with 'civ'.
