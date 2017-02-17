@@ -42,15 +42,16 @@ def get_constants(country):
 
 def get_adj_matrix(country):
     """
-        Return constant values for the cdr data set for each country.
+        Return volume and duration adjacency matrices for requested country.
 
         :param country: str - country code.
         :return:
         """
-    if country == 'civ':
-        return np.genfromtxt('../../../data/processed/civ/cdr/staticmetrics/adj_matrix_vol.csv')
-    elif country == 'sen':
-        return np.genfromtxt('../../../data/processed//cdr/staticmetrics/adj_matrix_vol.csv')
+    if country in ['civ', 'sen']:
+        return np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/'
+                             'adj_matrix_vol.csv' % country, delimiter=','),\
+               np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/'
+                             'adj_matrix_dur.csv' % country, delimiter=',')
     else:
         print "Please type the country abbreviation (lower case): "
         return get_constants(country)

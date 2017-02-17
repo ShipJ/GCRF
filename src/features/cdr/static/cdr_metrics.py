@@ -9,28 +9,29 @@ import os
 from src.config import config
 
 
-def activity(country):
-    adj_matrix = config.get_adj_matrix(country)
-    print adj_matrix
+def activity(country, num_towers):
+    adj_matrix_vol, adj_matrix_dur = config.get_adj_matrix(country)
 
     sys.exit()
+    volume_total, volume_in, volume_out, volume_self = [], [], [], []
 
-    volume_total, volume_in, volume_out = [], [], []
-    for i in range(1240):
-        vol_self = adj_matrix[i, i]
-        vol_in = np.sum(adj_matrix[:, i])
-        vol_out = np.sum(adj_matrix[i, :])
+    for i in range(num_towers):
+        vol_self = adj_matrix_vol[i, i]
+        vol_in = np.sum(adj_matrix_vol[:, i])
+        vol_out = np.sum(adj_matrix_vol[i, :])
         volume_in.append(vol_in)
         volume_out.append(vol_out)
+        volume_self.append(vol_self)
         volume_total.append(vol_in + vol_out - vol_self)
 
     total_activity = pd.DataFrame()
-    total_activity['ID'] = np.array(range(num_bts))
+    total_activity['ID'] = np.array(range(num_towers))
     total_activity['Vol'] = volume_total
     total_activity['Vol_in'] = volume_in
     total_activity['Vol_out'] = volume_out
+    total_activity['Vol_self'] = volume_self
+    print total_activity
 
-    total_activity.to_csv('activity.csv', delimiter=',', index=None)
 
 
 
@@ -40,8 +41,9 @@ def activity(country):
 if __name__ == '__main__':
     country = config.get_country()
     constants = config.get_constants(country)
+    num_towers = constants['num_towers']
 
-    activity(country)
+    activity(country, num_towers)
 
 
 
