@@ -22,11 +22,11 @@ def get_country():
 
 
 def get_constants(country):
-    if country == 'sen':
-        constants = {'country' : 'civ', 'num_towers' : 1240, 'hours' : 3278}
-        return constants
-    elif country == 'civ':
+    if country == 'civ':
         constants = {'country': 'civ', 'num_towers': 1240, 'hours': 3278}
+        return constants
+    elif country == 'sen':
+        constants = {'country': 'sen', 'num_towers': 1668, 'hours': 8733}
         return constants
     else:
         print "Please type the country abbreviation (lower case): "

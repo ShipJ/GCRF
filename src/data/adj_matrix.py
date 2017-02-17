@@ -3,6 +3,7 @@ import numpy as np
 import os
 import scipy.sparse as sparse
 from src.config import config
+import sys
 
 
 def adj_matrix(source, target, country):
@@ -16,8 +17,11 @@ def adj_matrix(source, target, country):
     :return: None.
     """
 
-    constants = pd.DataFrame(pd.read_csv('../../data/processed/%s/constants.txt' % country))
-    num_towers = constants['num_towers'].iloc[0]
+    constants = config.get_constants(country)
+    num_towers = constants['num_towers']
+    print num_towers
+
+    sys.exit()
 
     # A 'coo' matrix is a coordinate based sparse matrix (efficient/fast)
     coo_vol = sparse.coo_matrix((num_towers, num_towers))

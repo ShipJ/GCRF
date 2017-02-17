@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import sys
 import sklearn.metrics as sk
 import networkx as nx
+import os
 
+print len(os.listdir('/Users/JackShipway/Desktop/GCRF/data/interim/sen/cdr/timestamp'))
 
 sys.exit()
 
