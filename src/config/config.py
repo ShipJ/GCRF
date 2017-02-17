@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 """
 This file contains various functions that used by various scripts, as well as providing constant values for
@@ -56,3 +57,17 @@ def get_adj_matrix(country):
     else:
         print "Please type the country abbreviation (lower case): "
         return get_constants(country)
+
+
+def get_cdr_features(country):
+    """
+    Return the cdr features of the given country.
+    :param country: country code.
+    :return: dataframe containing the respective data.
+    """
+    if country in ['civ', 'sen']:
+        return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
+                                        'new/total_activity.csv' % country)),\
+               pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
+                                        'new/deg_vector.csv' % country)),\
+               # pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv'))

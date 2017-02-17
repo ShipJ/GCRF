@@ -26,7 +26,7 @@ def activity(country, num_towers):
         duration_in.append(dur_in), duration_out.append(dur_out), duration_self.append(dur_self)
         volume_total.append(vol_in + vol_out - vol_self), duration_total.append(dur_in + dur_out - dur_self)
     total_activity = pd.DataFrame()
-    total_activity['ID'] = np.array(range(num_towers))
+    total_activity['CellTowerID'] = np.array(range(num_towers))
     total_activity['Vol'] = volume_total
     total_activity['Vol_in'] = volume_in
     total_activity['Vol_out'] = volume_out
@@ -53,6 +53,7 @@ def degree_vector(country, num_towers):
         self_deg = 1 if adj_matrix[i, i] > 0 else 0
         total_degree.append(in_deg+out_deg-self_deg), in_degree.append(in_deg), out_degree.append(out_deg)
     deg_vec = pd.DataFrame()
+    deg_vec['CellTowerID'] = np.array(range(num_towers))
     deg_vec['Degree'] = total_degree
     deg_vec['In_degree'] = in_degree
     deg_vec['Out_degree'] = out_degree
@@ -60,34 +61,54 @@ def degree_vector(country, num_towers):
 
 def entropy(country, num_towers):
     """
-    This..
+    Compute the normalised entropy of each cell tower in the data set.
     :param country:
     :param num_towers:
     :return:
     """
     adj_matrix = config.get_adj_matrix(country)[0]
+    total_activity, deg_vector = config.get_cdr_features(country)
+    total_activity = total_activity.as_matrix()
+    deg_vector = deg_vector.as_matrix()
 
-    # total_activity = np.genfromtxt('activity.csv', delimiter=',', skiprows=1)
-    # deg_vector = np.genfromtxt('deg_vector.csv', delimiter=',')
-    #
-    # q_matrix = adj_matrix / np.array(total_activity[:, 1, None])
-    # where_nan = np.where(np.isnan(q_matrix))
-    # q_matrix[where_nan] = 0
-    # log_q_matrix = np.log(q_matrix)
-    # where_inf = np.where(np.isinf(log_q_matrix))
-    # log_q_matrix[where_inf] = 0
-    # S = []
-    # for i in range(1240):
-    #     q_sum = 0
-    #     for j in range(1240):
-    #         q_sum += q_matrix[i, j] * log_q_matrix[i, j]
-    #     S.append((-1*q_sum)/np.log(deg_vector[i]))
-    # np.savetxt('entropy.csv', S, delimiter=',')
+    q_matrix = adj_matrix / total_activity[:, 1, None]
+    where_nan = np.where(np.isnan(q_matrix))
+    q_matrix[where_nan] = 0
+    log_q_matrix = np.log(q_matrix)
 
+    where_inf = np.where(np.isinf(log_q_matrix))
+    log_q_matrix[where_inf] = 0
+    S = []
+    for i in range(num_towers):
+        q_sum = 0
+        for j in range(num_towers):
+            q_sum += q_matrix[i, j] * log_q_matrix[i, j]
+        S.append((-1*q_sum)/np.log(deg_vector[i, 1]))
+    ent = pd.DataFrame()
+    ent['CellTowerID'] = np.array(range(num_towers))
+    ent['Entropy'] = S
+    return ent
 
+def med_degree(country, num_towers):
 
+    adj_matrix = config.get_adj_matrix(country)[0]
 
+    for i in range(num_towers):
+        row_col = np.concatenate((adj_matrix[i, :], adj_matrix[:, i]))
+        row_col_self = np.delete(row_col, i)
+        median_weight = np.median(row_col_self) - 0.1
+        adj_matrix[:, i][np.where(adj_matrix[i, :] < median_weight)] = 0
+        adj_matrix[i, :][np.where(adj_matrix[:, i] < median_weight)] = 0
 
+    adj_matrix[adj_matrix > 0] = 1
+    total_deg = np.zeros(num_towers)
+    for i in range(num_towers):
+        total_deg[i] = np.sum(np.delete(np.concatenate((adj_matrix[i, :], adj_matrix[:, i])), i))
+
+    med_deg = pd.DataFrame()
+    med_deg['CellTowerID'] = np.array(range(num_towers))
+    med_deg['Med_degree'] = total_deg
+    return med_deg
 
 
 if __name__ == '__main__':
@@ -95,46 +116,8 @@ if __name__ == '__main__':
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
 
-    act = activity(country, num_towers)
-    act.to_csv('Users/JackShipway/Desktop/GCRF/data/processed/%s/cdr/staticmetrics/new/total_activity.csv'
-               % country, index=None)
-    deg = degree_vector(country, num_towers)
-    deg.to_csv('Users/JackShipway/Desktop/GCRF/data/processed/%s/cdr/staticmetrics/new/deg_vector.csv'
-               % country, index=None)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-''' Median Degree '''
-# adj_matrix = np.genfromtxt(path+'/CDR/staticmetrics/Other/adj_matrix_civ.csv', delimiter=',')
-# for i in range(num_bts):
-#     row_col = np.concatenate((adj_matrix[i, :], adj_matrix[:, i]))
-#     row_col_self = np.delete(row_col, i)
-#     median_weight = np.median(row_col_self) - 0.1
-#     adj_matrix[:, i][np.where(adj_matrix[i, :] < median_weight)] = 0
-#     adj_matrix[i, :][np.where(adj_matrix[:, i] < median_weight)] = 0
-# adj_matrix[adj_matrix > 0] = 1
-# total_deg = np.zeros(num_bts)
-# for i in range(num_bts):
-#     total_deg[i] = np.sum(np.delete(np.concatenate((adj_matrix[i, :], adj_matrix[:, i])), i))
-# np.savetxt('med_degree.csv', total_deg, delimiter=',')
 
 
 ''' Introversion '''
