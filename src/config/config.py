@@ -48,9 +48,9 @@ def get_adj_matrix(country):
         :return:
         """
     if country == 'civ':
-        return np.genfromtxt('../../data/processed/civ/cdr/staticmetrics/adj_matrix_vol.csv')
+        return np.genfromtxt('../../../data/processed/civ/cdr/staticmetrics/adj_matrix_vol.csv')
     elif country == 'sen':
-        return np.genfromtxt('../../data/processed//cdr/staticmetrics/adj_matrix_vol.csv')
+        return np.genfromtxt('../../../data/processed//cdr/staticmetrics/adj_matrix_vol.csv')
     else:
         print "Please type the country abbreviation (lower case): "
         return get_constants(country)
