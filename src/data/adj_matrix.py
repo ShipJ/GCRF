@@ -6,7 +6,7 @@ import scipy.sparse as sparse
 
 def adj_matrix(source, target, country):
     """
-    From time-stamped data files, compute adjacency matrix
+    From time-stamped data files, compute adjacency matrix: ~
 
     :param source: string - file path to raw data.
     :param target: string - file path to save processed data.
@@ -18,8 +18,9 @@ def adj_matrix(source, target, country):
     constants = pd.DataFrame(pd.read_csv('../../data/processed/%s/constants.txt' % country))
     num_towers = constants['num_towers'].iloc[0]
 
-    adj_matrix_vol = np.zeros((num_towers, num_towers))
-    adj_matrix_dur = np.zeros((num_towers, num_towers))
+    # A 'coo' matrix is a coordinate based sparse matrix (efficient/fast)
+    coo_vol = sparse.coo_matrix((num_towers, num_towers))
+    coo_dur = sparse.coo_matrix((num_towers, num_towers))
 
     for f in os.listdir(source):
         print "Reading: %s" % f
@@ -29,19 +30,13 @@ def adj_matrix(source, target, country):
         # Convert to imaginary cell tower ID (this is not useful, but aids processing)
         cdr[missing] = num_towers-1
 
-        i, j, vol, dur = cdr[:, 0], cdr[:, 1], cdr[:, 2], cdr[:, 3]
-        sparse_adj_vol = sparse.lil_matrix((num_towers, num_towers))
-        sparse_adj_dur = sparse.lil_matrix((num_towers, num_towers))
+        coo_vol += sparse.coo_matrix((cdr[:, 2], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
+        coo_dur += sparse.coo_matrix((cdr[:, 2], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
 
-        for i, j, v, d in zip(i, j, vol, dur):
-            sparse_adj_vol[i, j] = v
-            sparse_adj_dur[i, j] = d
-
-        adj_matrix_vol += sparse_adj_vol.todense()
-        adj_matrix_dur += sparse_adj_vol.todense()
-
-    np.savetxt(target+'adj_matrix_vol.csv', adj_matrix_vol, delimiter=',')
-    np.savetxt(target+'adj_matrix_dur.csv', adj_matrix_dur, delimiter=',')
+    # Sparse to dense matrix (i.e. adjacency matrix)
+    coo_vol.todense(), coo_dur.todense()
+    np.savetxt(target+'adj_matrix_vol.csv', coo_vol, delimiter=',')
+    np.savetxt(target+'adj_matrix_dur.csv', coo_dur, delimiter=',')
 
 
 def get_country():
