@@ -10,27 +10,79 @@ from src.config import config
 
 
 def activity(country, num_towers):
+    """
+    Sum the total activity (volume and duration) of each cell tower over all time-steps.
+    :param country: str - country code.
+    :param num_towers: int - number of cell towers.
+    :return: dataframe - containing total activity of each cell tower
+    """
     adj_matrix_vol, adj_matrix_dur = config.get_adj_matrix(country)
-
-    sys.exit()
     volume_total, volume_in, volume_out, volume_self = [], [], [], []
-
+    duration_total, duration_in, duration_out, duration_self = [], [], [], []
     for i in range(num_towers):
-        vol_self = adj_matrix_vol[i, i]
-        vol_in = np.sum(adj_matrix_vol[:, i])
-        vol_out = np.sum(adj_matrix_vol[i, :])
-        volume_in.append(vol_in)
-        volume_out.append(vol_out)
-        volume_self.append(vol_self)
-        volume_total.append(vol_in + vol_out - vol_self)
-
+        vol_self, vol_in, vol_out = adj_matrix_vol[i, i], np.sum(adj_matrix_vol[:, i]), np.sum(adj_matrix_vol[i, :])
+        dur_self, dur_in, dur_out = adj_matrix_dur[i, i], np.sum(adj_matrix_dur[:, i]), np.sum(adj_matrix_dur[i, :])
+        volume_in.append(vol_in), volume_out.append(vol_out), volume_self.append(vol_self)
+        duration_in.append(dur_in), duration_out.append(dur_out), duration_self.append(dur_self)
+        volume_total.append(vol_in + vol_out - vol_self), duration_total.append(dur_in + dur_out - dur_self)
     total_activity = pd.DataFrame()
     total_activity['ID'] = np.array(range(num_towers))
     total_activity['Vol'] = volume_total
     total_activity['Vol_in'] = volume_in
     total_activity['Vol_out'] = volume_out
     total_activity['Vol_self'] = volume_self
-    print total_activity
+    total_activity['Dur'] = duration_total
+    total_activity['Dur_in'] = duration_in
+    total_activity['Dur_out'] = duration_out
+    total_activity['Dur_self'] = duration_self
+    return total_activity
+
+def degree_vector(country, num_towers):
+    """
+    Return the degree of each cell tower
+    :param country: str - country code.
+    :param num_towers: int - number of cell towers.
+    :return: dataframe - contains total, in and out degree of each cell tower.
+    """
+    adj_matrix = config.get_adj_matrix(country)[0]
+
+    total_degree, in_degree, out_degree = [], [], []
+    for i in range(num_towers):
+        in_deg = np.count_nonzero(adj_matrix[:, i])
+        out_deg = np.count_nonzero(adj_matrix[i, :])
+        self_deg = 1 if adj_matrix[i, i] > 0 else 0
+        total_degree.append(in_deg+out_deg-self_deg), in_degree.append(in_deg), out_degree.append(out_deg)
+    deg_vec = pd.DataFrame()
+    deg_vec['Degree'] = total_degree
+    deg_vec['In_degree'] = in_degree
+    deg_vec['Out_degree'] = out_degree
+    return deg_vec
+
+def entropy(country, num_towers):
+    """
+    This..
+    :param country:
+    :param num_towers:
+    :return:
+    """
+    adj_matrix = config.get_adj_matrix(country)[0]
+
+    # total_activity = np.genfromtxt('activity.csv', delimiter=',', skiprows=1)
+    # deg_vector = np.genfromtxt('deg_vector.csv', delimiter=',')
+    #
+    # q_matrix = adj_matrix / np.array(total_activity[:, 1, None])
+    # where_nan = np.where(np.isnan(q_matrix))
+    # q_matrix[where_nan] = 0
+    # log_q_matrix = np.log(q_matrix)
+    # where_inf = np.where(np.isinf(log_q_matrix))
+    # log_q_matrix[where_inf] = 0
+    # S = []
+    # for i in range(1240):
+    #     q_sum = 0
+    #     for j in range(1240):
+    #         q_sum += q_matrix[i, j] * log_q_matrix[i, j]
+    #     S.append((-1*q_sum)/np.log(deg_vector[i]))
+    # np.savetxt('entropy.csv', S, delimiter=',')
 
 
 
@@ -43,7 +95,12 @@ if __name__ == '__main__':
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
 
-    activity(country, num_towers)
+    act = activity(country, num_towers)
+    act.to_csv('Users/JackShipway/Desktop/GCRF/data/processed/%s/cdr/staticmetrics/new/total_activity.csv'
+               % country, index=None)
+    deg = degree_vector(country, num_towers)
+    deg.to_csv('Users/JackShipway/Desktop/GCRF/data/processed/%s/cdr/staticmetrics/new/deg_vector.csv'
+               % country, index=None)
 
 
 
@@ -56,52 +113,13 @@ if __name__ == '__main__':
 
 
 
-''' Activity '''
-# adj_matrix = np.genfromtxt(path+'/CDR/staticmetrics/Other/adj_matrix_civ.csv', delimiter=',')
-# volume_total, volume_in, volume_out = [], [], []
-# for i in range(1240):
-#     vol_self = adj_matrix[i, i]
-#     vol_in = np.sum(adj_matrix[:, i])
-#     vol_out = np.sum(adj_matrix[i, :])
-#     volume_in.append(vol_in)
-#     volume_out.append(vol_out)
-#     volume_total.append(vol_in + vol_out - vol_self)
-#
-# total_activity = pd.DataFrame()
-# total_activity['ID'] = np.array(range(num_bts))
-# total_activity['Vol'] = volume_total
-# total_activity['Vol_in'] = volume_in
-# total_activity['Vol_out'] = volume_out
-#
-# total_activity.to_csv('activity.csv', delimiter=',', index=None)
 
-# adj_matrix = np.genfromtxt(path+'/CDR/staticmetrics/Other/adj_matrix_civ.csv', delimiter=',')
-# deg_vector = []
-# for i in range(1240):
-#     in_deg = np.count_nonzero(adj_matrix[:, i])
-#     out_deg = np.count_nonzero(adj_matrix[i, :])
-#     self_deg = 1 if adj_matrix[i, i] > 0 else 0
-#     deg_vector.append(in_deg+out_deg-self_deg)
-# np.savetxt('deg_vector.csv', deg_vector, delimiter=',')
 
-''' Entropy '''
-# adj_matrix = np.genfromtxt(path+'/CDR/staticmetrics/Other/adj_matrix_civ.csv', delimiter=',')
-# total_activity = np.genfromtxt('activity.csv', delimiter=',', skiprows=1)
-# deg_vector = np.genfromtxt('deg_vector.csv', delimiter=',')
-#
-# q_matrix = adj_matrix / np.array(total_activity[:, 1, None])
-# where_nan = np.where(np.isnan(q_matrix))
-# q_matrix[where_nan] = 0
-# log_q_matrix = np.log(q_matrix)
-# where_inf = np.where(np.isinf(log_q_matrix))
-# log_q_matrix[where_inf] = 0
-# S = []
-# for i in range(1240):
-#     q_sum = 0
-#     for j in range(1240):
-#         q_sum += q_matrix[i, j] * log_q_matrix[i, j]
-#     S.append((-1*q_sum)/np.log(deg_vector[i]))
-# np.savetxt('entropy.csv', S, delimiter=',')
+
+
+
+
+
 
 
 ''' Median Degree '''
