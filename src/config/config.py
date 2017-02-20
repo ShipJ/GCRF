@@ -80,4 +80,13 @@ def get_pop(country, adm):
     :return:
     """
     if country in ['civ', 'sen']:
-        return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/pop_adm_%d_2010.csv' % (country, adm)))
+        return pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/pop_adm_%d_2010.csv' % (country, adm)))
+
+
+def get_cdr_metrics(country):
+    activity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv' % country))
+    entropy = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/entropy.csv' % country))
+    med_degree = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/med_degree.csv' % country))
+    graph = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/graph_metrics.csv' % country))
+    introversion = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country))
+    return [activity, entropy, med_degree, graph, introversion]

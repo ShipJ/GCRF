@@ -123,10 +123,10 @@ def introversion(num_towers, adj_matrix):
     for i in range(num_towers):
         out = np.sum(np.delete(adj_matrix[i, :], i))
         introv[i] = (adj_matrix[i, i] / out) if out > 0 else 0
-    introv = pd.DataFrame()
-    introv['CellTowerID'] = np.array(range(num_towers))
-    introv['Introversion'] = introv
-    return introv
+    introverse = pd.DataFrame()
+    introverse['CellTowerID'] = np.array(range(num_towers))
+    introverse['Introversion'] = introv
+    return introverse
 
 
 def graph_metrics(adj_matrix):
@@ -180,11 +180,11 @@ if __name__ == '__main__':
     adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_dur.csv' % country,
                                    delimiter=',')
 
-    total_activity = activity(country, num_towers, adj_matrix_vol, adj_matrix_dur)
-    deg_vector = degree_vector(country, num_towers, adj_matrix_vol)
-    entropy = entropy(country, num_towers, adj_matrix_vol)
-    med_deg = med_degree(country, num_towers, adj_matrix_vol)
-    graph = graph_metrics(adj_matrix_vol)
+    # total_activity = activity(country, num_towers, adj_matrix_vol, adj_matrix_dur)
+    # deg_vector = degree_vector(country, num_towers, adj_matrix_vol)
+    # entropy = entropy(country, num_towers, adj_matrix_vol)
+    # med_deg = med_degree(country, num_towers, adj_matrix_vol)
+    # graph = graph_metrics(adj_matrix_vol)
     introv = introversion(num_towers, adj_matrix_vol)
     # gravity = gravity(adj_matrix_vol, dist_matrix, pop)
     # radiation = radiation(adj_matrix_vol, dist_matrix, pop)
@@ -198,8 +198,8 @@ if __name__ == '__main__':
     #                index=None)
     # med_deg.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/med_degree.csv' % country,
     #                index=None)
-    # introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
-    #                index=None)
+    introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
+                   index=None)
     # graph.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/graph_metrics.csv' % country,
     #              index=None)
     # gravity.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/gravity.csv' % country,
