@@ -71,3 +71,13 @@ def get_cdr_features(country):
                pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
                                         'new/deg_vector.csv' % country)),\
                # pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv'))
+
+def get_pop(country, adm):
+    """
+
+    :param country:
+    :param adm:
+    :return:
+    """
+    if country in ['civ', 'sen']:
+        return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/pop_adm_%d_2010.csv' % (country, adm)))
