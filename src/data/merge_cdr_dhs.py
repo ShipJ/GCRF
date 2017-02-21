@@ -4,49 +4,69 @@ import numpy as np
 import sys
 
 
+def merge_cdr(df_list, country):
+    """
+
+    :param df_list:
+    :return:
+    """
+    master = df_list[0]
+    for i in range(1, len(df_list)):
+        master = master.merge(df_list[i], on='CellTowerID')
+    # Merge with adm regions
+    cdr_adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/CellTowers/CDR_Adm_1234.csv' % country,
+                                       usecols=['CellTowerID', 'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
+    master = master.merge(cdr_adm, on='CellTowerID')
+    return master
+
+def feature_per_adm(master, pop_intersect):
+    prop_vol = []
+    for i in pd.unique(pop_intersect['Adm_4']):
+        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
+
+        vol = 0
+        for j in adm_i['CellTowerID']:
+            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
+            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
+            cell_tower_vol = np.sum(master[master['CellTowerID'] == j]['Vol'])
+            vol += prop_pop/float(cell_tower_pop)*cell_tower_vol
+        prop_vol.append(vol)
+    return prop_vol
+
+
+def all_feature_per_adm(master, pop_intersect):
+    prop_vol = []
+    for i in pd.unique(pop_intersect['Adm_4']):
+        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
+
+        vol = np.zeros(14)
+        for j in adm_i['CellTowerID']:
+            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
+            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
+            cell_tower_all = np.sum(master[master['CellTowerID'] == j])
+            vol += prop_pop/float(cell_tower_pop)*np.array(cell_tower_all[1:15])
+        vol[8:] = vol[8:] / np.array(len(adm_i))
+        prop_vol.append(vol)
+    return prop_vol
+
+
 if __name__ == '__main__':
     country = config.get_country()
     cdr_metrics = config.get_cdr_metrics(country)
+    master = merge_cdr(cdr_metrics, country)
 
-    print cdr_metrics
+    pop_adm_4 = config.get_pop(country, 4)
+    pop_intersect = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/IntersectPop.csv' % country))
+    low_pop = pop_intersect[pop_intersect['Pop_2010'] < 1]['CellTowerID']
 
+    for i in low_pop:
+        pop_intersect = pop_intersect[pop_intersect['CellTowerID'] != i]
 
+    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/celltowers/Adm_1234.csv' % country))
+    all_features_adm_4 = pd.DataFrame(all_feature_per_adm(master, pop_intersect), columns=master.columns[1:15])
+    master = pd.DataFrame()
+    master = pd.DataFrame(pd.concat([master, adm, all_features_adm_4], axis=1))
 
-
-    sys.exit()
-
-
-
-
-
-    # Merge Adm region
-    cdr_adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/CellTowers/CDR_Adm_1234.csv' % country,
-                                       usecols=['CellTowerID', 'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
-
-master = master.merge(cdr_adm, on='CellTowerID')
-
-''' merge populations and distance data '''
-intersect_pop = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/IntersectPop.csv' % country))
-pop_10 = intersect_pop.groupby('CellTowerID')['Pop_2010'].sum().reset_index()
-pop_14 = intersect_pop.groupby('CellTowerID')['Pop_2014'].sum().reset_index()
-
-master = master.merge(pop_10, on='CellTowerID').merge(pop_14, on='CellTowerID')
-
-constants = config.get_constants(country)
-num_towers = constants['num_towers']
-
-pop_4 = config.get_pop(country, 4)
-
-vor_prop = np.zeros(len(intersect_pop))
-for i in range(len(intersect_pop)):
-    adm_4 = int(intersect_pop.iloc[i].Adm_4)
-    pop_adm_4 = pop_4[pop_4['Adm_4'] == adm_4]['Pop_2010']
-
-    vor_prop[i] = intersect_pop.iloc[i].Pop_2010 / pop_adm_4
-
-intersect_pop['vorProp'] = vor_prop
-
-master_adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/celltowers/Adm_1234.csv' % country))
-
+    master.to_csv('../../data/processed/%s/cdr/master.csv' % country, index=None)
 
 
