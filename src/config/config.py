@@ -90,3 +90,7 @@ def get_cdr_metrics(country):
     graph = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/graph_metrics.csv' % country))
     introversion = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country))
     return [activity, entropy, med_degree, graph, introversion]
+
+
+def get_master(country):
+    return pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/master.csv' % country))
