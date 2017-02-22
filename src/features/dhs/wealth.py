@@ -7,7 +7,7 @@ path = '/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast'
 
 dhs = pd.DataFrame(pd.read_csv(path+'/DHS/SPSS/DHS_Adm_1234.csv'))
 
-wealth = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/wealth.csv'))
+wealth = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/wealth.csv'))
 
 for index, row in wealth.iterrows():
     if row.Index == 1:

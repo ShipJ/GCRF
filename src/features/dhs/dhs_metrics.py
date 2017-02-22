@@ -12,7 +12,7 @@ if __name__ == "__main__":
     cluster_wealth = wealth_index.groupby(by=['ClustNum'])['Score'].median()
 
     # Get total activity per cell tower
-    cell_activity = pd.DataFrame(np.load('Data/IvoryCoast/CDR/Metrics/activity.npy'), columns=['Volume'])
+    cell_activity = pd.DataFrame(np.load('Data/IvoryCoast/CDR/metrics/activity.npy'), columns=['Volume'])
 
     # Get regions corresponding to each cell tower
     corresponding_regions = pd.DataFrame(pd.read_csv('Data/CorrespondingSubPref.csv', usecols=['InputID', 'TargetID']))
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     hiv_adm_3 = hiv_data.groupby(by='ID_3')['Num_Pos_PP'].mean().reset_index()
     hiv_adm_4 = hiv_data.groupby(by='ID_4')['Num_Pos_PP'].mean().reset_index()
 
-    activity_adm_1234 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/activity_bts_level.csv'))
+    activity_adm_1234 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/activity_bts_level.csv'))
 
     vor_prop = pd.DataFrame(pd.read_csv('Data/IvoryCoast/RegionBoundaries/VorPropAdm1234.csv'))
 

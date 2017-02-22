@@ -22,7 +22,7 @@ pop_1 = np.array(pop.groupby('Adm_1')['Pop_2010'].sum())
 pop_2 = np.array(pop.groupby('Adm_2')['Pop_2010'].sum())
 pop_3 = np.array(pop.groupby('Adm_3')['Pop_2010'].sum())
 
-malaria = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/Metrics/Malaria/'
+malaria = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/metrics/Malaria/'
                                    'bloodtest.csv'))
 dhs = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/SPSS/DHS_Adm_1234.csv'))
 
@@ -34,7 +34,7 @@ for i in np.setdiff1d(malaria['DHSClust'], dhs['DHSClust']):
 # mal_mean = np.array(dhs.groupby('Adm_1')['malaria'].mean())
 # mal_med = np.array(dhs.groupby('Adm_1')['malaria'].median())
 
-malaria = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/Metrics/DHSData.csv'))
+malaria = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/metrics/DHSData.csv'))
 mal_mean = np.array(malaria.groupby('Adm_3')['MalariaPerPop'].mean())
 mal_med = np.array(malaria.groupby('Adm_3')['MalariaPerPop'].median())
 act_3 = np.divide(act_3[1:], pop_3)

@@ -21,7 +21,7 @@ if __name__ == "__main__":
     else:
         num_bts, hours = 10000, 100000
 
-    wealth = pd.DataFrame(pd.read_csv(path+'/Metrics/Poverty/cluster_wealth.csv', encoding="utf-8-sig"))
+    wealth = pd.DataFrame(pd.read_csv(path+'/metrics/Poverty/cluster_wealth.csv', encoding="utf-8-sig"))
 
     quintile_poorest = np.zeros(9686)
     for i in range(len(wealth)):
@@ -61,9 +61,9 @@ if __name__ == "__main__":
     #
     # admin_level_1 = corresponding_regions.groupby(by='SubnationalID')['WealthMedian'].mean()
     #
-    # cell_tower_adm_1 = pd.DataFrame(pd.read_csv("Data/IvoryCoast/CDR/Metrics/activity_per_adm_1.csv",
+    # cell_tower_adm_1 = pd.DataFrame(pd.read_csv("Data/IvoryCoast/CDR/metrics/activity_per_adm_1.csv",
     #                                                encoding="utf-8-sig", usecols=['ID', 'ID_1']))
-    # cell_tower_activity = np.load("Data/IvoryCoast/CDR/Metrics/total_activity.npy")
+    # cell_tower_activity = np.load("Data/IvoryCoast/CDR/metrics/total_activity.npy")
     #
     # cell_tower_adm_1['activity'] = cell_tower_activity[[cell_tower_adm_1['ID'] - 1]]
     #
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # cell_tower_adm_1 = cell_tower_adm_1.loc[1:]
     # a = pd.DataFrame(cell_tower_adm_1.groupby(by='ID_1')['activity'].mean())
     #
-    # # a.to_csv('Data/IvoryCoast/CDR/Metrics/adm_4_activity.csv')
+    # # a.to_csv('Data/IvoryCoast/CDR/metrics/adm_4_activity.csv')
     #
     # pop_per_191 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/DHS/pop_per_191regions.csv'))
     # pop_per_191 = pd.DataFrame(pop_per_191.drop([5, 16]))

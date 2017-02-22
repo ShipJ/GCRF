@@ -25,14 +25,14 @@ if __name__ == "__main__":
     hiv_rate['Adm_4'] = np.array(pop['Adm_4'])
 
 
-    activity_1 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity_adm_1.csv'))
+    activity_1 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity_adm_1.csv'))
     activity_1['normed'] = activity_1['Vol'] / max(activity_1['Vol'])
     activity_1['dur_normed'] = activity_1['Dur'] / max(activity_1['Dur'])
 
     print pearsonr(activity_1['Vol'][2:], hiv_rate.groupby('Adm_1')['rate'].mean()[2:])
     print pearsonr(activity_1['Dur'][2:], hiv_rate.groupby('Adm_1')['rate'].mean()[2:])
 
-    activity_2 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity_adm_2.csv'))
+    activity_2 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity_adm_2.csv'))
     activity_2['normed'] = activity_2['Vol'] / max(activity_2['Vol'])
     activity_2['dur_normed'] = activity_2['Dur'] / max(activity_2['Dur'])
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     print pearsonr(activity_2['Dur'][5:], hiv_rate.groupby('Adm_2')['rate'].mean()[5:])
 
     ''' adm_3 '''
-    activity_3 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity_adm_3.csv'))
+    activity_3 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity_adm_3.csv'))
     activity_3['normed'] = activity_3['Vol'] / max(activity_3['Vol'])
     activity_3['dur_normed'] = activity_3['Dur'] / max(activity_3['Dur'])
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     plt.show()
 
     ''' adm_4 '''
-    activity_4 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity_adm_4.csv'))
+    activity_4 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity_adm_4.csv'))
     activity_4['normed'] = activity_4['Vol'] / max(activity_4['Vol'])
     activity_4['dur_normed'] = activity_4['Dur'] / max(activity_4['Dur'])
 

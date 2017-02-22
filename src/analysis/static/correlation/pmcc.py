@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 
-# total_activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/activityPerAdm_4.csv'))
+# total_activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/activityPerAdm_4.csv'))
 #
 # print total_activity
 #
@@ -46,7 +46,7 @@ import sys
 
 
 
-data = np.load('Data/IvoryCoast/CDR/Metrics/total_activity.npy')
+data = np.load('Data/IvoryCoast/CDR/metrics/total_activity.npy')
 correspond = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/CellTowerInfo/CellTowerAdm_4.csv', encoding="utf-8-sig"),
                           columns=['CellTowerID', 'Adm_4ID'])
 

@@ -6,8 +6,8 @@ from scipy.stats import pearsonr
 path = '/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast'
 
 dhs = pd.DataFrame(pd.read_csv(path+'/DHS/SPSS/DHS_Adm_1234.csv'))
-bloodtest = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/Malaria/bloodtest.csv')).dropna()
-rapidtest = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/Malaria/rapidtest.csv')).dropna()
+bloodtest = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/Malaria/bloodtest.csv')).dropna()
+rapidtest = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/Malaria/rapidtest.csv')).dropna()
 for i in np.setdiff1d(range(1, 352), dhs['DHSClust']):
     bloodtest = bloodtest[bloodtest['DHSClust'] != i]
     rapidtest = rapidtest[rapidtest['DHSClust'] != i]

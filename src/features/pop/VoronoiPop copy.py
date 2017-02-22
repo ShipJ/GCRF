@@ -8,7 +8,7 @@ if __name__ == "__main__":
     # Proportion of each cell tower associated with each administrative region
     IntersectPop = pd.DataFrame(pd.read_csv('Data/Temporary/IvoryCoastIntersectPop.csv'))
     # Total activity of each cell tower
-    Activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity.csv'))
+    Activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity.csv'))
 
     adm = [np.zeros((14, 6)), np.zeros((33, 6)), np.zeros((113, 6)), np.zeros((191, 6))]
 
@@ -46,10 +46,10 @@ if __name__ == "__main__":
     activity_pp_4 = adm[3] / pop_4[:, None]
 
 
-    # np.savetxt('Data/IvoryCoast/CDR/Metrics/total_activity_adm_1.csv', activity_pp_1, delimiter=',')
-    # np.savetxt('Data/IvoryCoast/CDR/Metrics/total_activity_adm_2.csv', activity_pp_2, delimiter=',')
-    # np.savetxt('Data/IvoryCoast/CDR/Metrics/total_activity_adm_3.csv', activity_pp_3, delimiter=',')
-    # np.savetxt('Data/IvoryCoast/CDR/Metrics/total_activity_adm_4.csv', activity_pp_4, delimiter=',')
+    # np.savetxt('Data/IvoryCoast/CDR/metrics/total_activity_adm_1.csv', activity_pp_1, delimiter=',')
+    # np.savetxt('Data/IvoryCoast/CDR/metrics/total_activity_adm_2.csv', activity_pp_2, delimiter=',')
+    # np.savetxt('Data/IvoryCoast/CDR/metrics/total_activity_adm_3.csv', activity_pp_3, delimiter=',')
+    # np.savetxt('Data/IvoryCoast/CDR/metrics/total_activity_adm_4.csv', activity_pp_4, delimiter=',')
 
 
     ''' Senegal '''

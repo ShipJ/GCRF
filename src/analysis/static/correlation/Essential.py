@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats.stats import pearsonr
 
 # Read all CDR data - activity (volume and duration, maybe a ratio of the two?, entropy.csv, introversion, median..
-cdr_activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/activity_bts_level.csv'))
+cdr_activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/activity_bts_level.csv'))
 
 # # Get rid of all inactive towers (this leaves me with exactly 1200 towers)
 # inactive = cdr_activity[cdr_activity['Activity'] < 12400]['CellTowerID']

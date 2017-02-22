@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # wealth_adm_3 = clust_adm_1234.groupby(by='ID_3')['Poverty'].mean().reset_index()
 # wealth_adm_4 = clust_adm_1234.groupby(by='ID_4')['Poverty'].mean().reset_index()
 #
-activity_adm_1234 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/activity_bts_level.csv'))
+activity_adm_1234 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/activity_bts_level.csv'))
 print activity_adm_1234
 print np.sum(activity_adm_1234['Activity'])
 

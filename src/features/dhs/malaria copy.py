@@ -7,9 +7,9 @@ import sys
 
 path = '/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast'
 
-# malaria = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/Malaria/malaria_feb.csv'))
+# malaria = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/Malaria/malaria_feb.csv'))
 #
-# dhs = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/DHSData.csv'))
+# dhs = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/DHSData.csv'))
 # malaria_4 = dhs.groupby('Adm_4')['MalariaPerPop'].mean().reset_index()
 #
 # malaria = malaria.applymap(lambda x: -1 if isinstance(x, basestring) and x.isspace() else int(x))
@@ -61,18 +61,18 @@ path = '/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast'
 #                                'Rapid_neg', 'Rapid_tot', 'Num_members', 'Num_houses'].sum().reset_index()
 #
 #
-# malaria.to_csv(path+'/DHS/Metrics/Malaria/master_malaria.csv', index=None)
+# malaria.to_csv(path+'/DHS/metrics/Malaria/master_malaria.csv', index=None)
 
 
 master = pd.DataFrame(pd.read_csv(path+'/Master.csv'))
-malaria = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/Malaria/master_malaria.csv'))
+malaria = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/Malaria/master_malaria.csv'))
 
 master =  pd.DataFrame(master.merge(malaria, on='Adm_4', how='outer'))
-master.to_csv(path+'/DHS/Metrics/Malaria/now3.csv', index=None)
+master.to_csv(path+'/DHS/metrics/Malaria/now3.csv', index=None)
 
 
 #
-# # # master = pd.DataFrame(pd.read_csv(path+'/DHS/Metrics/Malaria/now.csv'))
+# # # master = pd.DataFrame(pd.read_csv(path+'/DHS/metrics/Malaria/now.csv'))
 # # #
 # # # master.to_csv(path+'/Master.csv', index=None)
 

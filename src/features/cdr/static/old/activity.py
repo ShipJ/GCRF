@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # Starting time-step (month, week, day, hour)
     m, w, d, h = 0, 0, 0, 0
 
-    # Metrics to derive
+    # metrics to derive
     volume_total, volume_in, volume_out = np.zeros(num_bts), np.zeros(num_bts), np.zeros(num_bts)
     duration_total, duration_in, duration_out = np.zeros(num_bts), np.zeros(num_bts), np.zeros(num_bts)
 

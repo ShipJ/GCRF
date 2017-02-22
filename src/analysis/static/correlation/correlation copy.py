@@ -9,9 +9,9 @@ activity_1 = pd.DataFrame(pd.read_csv('activity_1.csv'))
 entropy_1 = pd.DataFrame(pd.read_csv('entropy_1.csv'))
 med_degree_1 = pd.DataFrame(pd.read_csv('med_degree_1.csv'))
 
-dhs = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/Metrics/DHSData.csv'))
+dhs = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/DHS/metrics/DHSData.csv'))
 malaria_1 = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/UCLProject/Data/'
-                                        'IvoryCoast/DHS/Metrics/Malaria/bloodtest.csv'))
+                                        'IvoryCoast/DHS/metrics/Malaria/bloodtest.csv'))
 for i in np.setdiff1d(malaria_1['DHSClust'], dhs['DHSClust']):
     malaria_1 = malaria_1[malaria_1['DHSClust'] != i]
 dhs['malaria_1'] = np.array(malaria_1['Malaria'])

@@ -17,7 +17,7 @@ if __name__ == "__main__":
     rate = np.array(child_mort['six2OneYearPB']) / np.array(pop.groupby('Adm_4')['Pop_1km'].sum())
     child_mort['rate'] = rate
 
-    activity_1 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity_adm_1.csv'))
+    activity_1 = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity_adm_1.csv'))
     activity_1['normed'] = activity_1['Vol'] / max(activity_1['Vol'])
     activity_1['dur_normed'] = activity_1['Dur'] / max(activity_1['Dur'])
 

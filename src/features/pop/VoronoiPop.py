@@ -10,7 +10,7 @@ if __name__ == "__main__":
     IntersectPop = pd.DataFrame(pd.read_csv('Data/Temporary/IvoryCoastIntersectPop.csv'))
 
     # Total activity of each cell tower
-    Activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/Metrics/total_activity.csv'))
+    Activity = pd.DataFrame(pd.read_csv('Data/IvoryCoast/CDR/metrics/total_activity.csv'))
     for i in list(Activity[Activity['Vol'] < 178250]['CellTowerID']):
         IntersectPop = IntersectPop[IntersectPop['CellTowerID'] != i]
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # # adm[3] = np.delete(adm[3], [29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 41, 42, 94, 115, 119, 122, 123, 124, 128, 129, 133, 149, 158, 161, 164, 166, 168, 170, 172, 174, 176, 183], axis=0)
     # activity_pp_4 = adm[3] / pop_4[:, None]
 
-    np.savetxt('Data/IvoryCoast/CDR/Metrics/activity_adm_1_agg.csv', activity_pp_1, delimiter=',')
+    np.savetxt('Data/IvoryCoast/CDR/metrics/activity_adm_1_agg.csv', activity_pp_1, delimiter=',')
     # np.savetxt('Data/IvoryCoast/CDR/Metrics/activity_adm_2_removed.csv', activity_pp_2, delimiter=',')
     # np.savetxt('Data/IvoryCoast/CDR/Metrics/activity_adm_3_removed.csv', activity_pp_3, delimiter=',')
     # np.savetxt('Data/IvoryCoast/CDR/Metrics/activity_adm_4_removed.csv', activity_pp_4, delimiter=',')
