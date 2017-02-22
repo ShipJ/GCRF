@@ -50,9 +50,9 @@ def get_adj_matrix(country):
         :return:
         """
     if country in ['civ', 'sen']:
-        return np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/'
+        return np.genfromtxt('../../../../data/processed/%s/cdr/static_metrics/'
                              'adj_matrix_vol.csv' % country, delimiter=','),\
-               np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/'
+               np.genfromtxt('../../../../data/processed/%s/cdr/static_metrics/'
                              'adj_matrix_dur.csv' % country, delimiter=',')
     else:
         print "Please type the country abbreviation (lower case): "
@@ -66,11 +66,11 @@ def get_cdr_features(country):
     :return: dataframe containing the respective data.
     """
     if country in ['civ', 'sen']:
-        return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
+        return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/static_metrics/'
                                         'new/total_activity.csv' % country)),\
-               pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
-                                        'new/deg_vector.csv' % country)),\
-               # pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv'))
+               pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/static_metrics/'
+                                        'new/degree_vector.csv' % country)),\
+               # pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/static_metrics/new/total_activity.csv'))
 
 def get_pop(country, adm):
     """
@@ -84,13 +84,13 @@ def get_pop(country, adm):
 
 
 def get_cdr_metrics(country):
-    activity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv' % country))
-    entropy = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/entropy.csv' % country))
-    med_degree = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/med_degree.csv' % country))
-    graph = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/graph_metrics.csv' % country))
-    introversion = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country))
+    activity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/static_metrics/new/total_activity.csv' % country))
+    entropy = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/static_metrics/new/entropy.csv' % country))
+    med_degree = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/static_metrics/new/med_degree.csv' % country))
+    graph = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country))
+    introversion = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/static_metrics/new/introversion.csv' % country))
     return [activity, entropy, med_degree, graph, introversion]
 
 
 def get_master(country):
-    return pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/master.csv' % country))
+    return pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/all_cdr.csv' % country))

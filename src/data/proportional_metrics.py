@@ -14,7 +14,7 @@ def merge_cdr(df_list, country):
     for i in range(1, len(df_list)):
         master = master.merge(df_list[i], on='CellTowerID')
     # Merge with adm regions
-    cdr_adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/CellTowers/CDR_Adm_1234.csv' % country,
+    cdr_adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/CellTowers/bts_adm_1234.csv' % country,
                                        usecols=['CellTowerID', 'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
     master = master.merge(cdr_adm, on='CellTowerID')
     return master
@@ -62,11 +62,11 @@ if __name__ == '__main__':
     for i in low_pop:
         pop_intersect = pop_intersect[pop_intersect['CellTowerID'] != i]
 
-    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/celltowers/Adm_1234.csv' % country))
+    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/cell_towers/adm_1234.csv' % country))
     all_features_adm_4 = pd.DataFrame(all_feature_per_adm(master, pop_intersect), columns=master.columns[1:15])
     master = pd.DataFrame()
     master = pd.DataFrame(pd.concat([master, adm, all_features_adm_4], axis=1))
 
-    master.to_csv('../../data/processed/%s/cdr/master.csv' % country, index=None)
+    master.to_csv('../../data/processed/%s/cdr/all_cdr.csv' % country, index=None)
 
 

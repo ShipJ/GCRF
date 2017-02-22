@@ -175,9 +175,9 @@ if __name__ == '__main__':
     country = config.get_country()
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
-    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_vol.csv' % country,
+    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/static_metrics/adj_matrix_vol.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_dur.csv' % country,
+    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/static_metrics/adj_matrix_dur.csv' % country,
                                    delimiter=',')
 
     # total_activity = activity(country, num_towers, adj_matrix_vol, adj_matrix_dur)
@@ -190,21 +190,21 @@ if __name__ == '__main__':
     # radiation = radiation(adj_matrix_vol, dist_matrix, pop)
 
     ''' Save to csv '''
-    # total_activity.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv' % country,
+    # total_activity.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/total_activity.csv' % country,
     #                       index=None)
-    # deg_vector.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/deg_vector.csv' % country,
+    # deg_vector.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/degree_vector.csv' % country,
     #                   index=None)
-    # entropy.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/entropy.csv' % country,
+    # entropy.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/entropy.csv' % country,
     #                index=None)
-    # med_deg.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/med_degree.csv' % country,
+    # med_deg.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/med_degree.csv' % country,
     #                index=None)
-    introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
+    introv.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/introversion.csv' % country,
                    index=None)
-    # graph.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/graph_metrics.csv' % country,
+    # graph.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country,
     #              index=None)
-    # gravity.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/gravity.csv' % country,
+    # gravity.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/gravity.csv' % country,
     #                index=None)
-    # radiation.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/radiation.csv' % country,
+    # radiation.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/radiation.csv' % country,
     #                  index=None)
 
 

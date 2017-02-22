@@ -21,11 +21,11 @@ if __name__ == "__main__":
         num_bts, hours = 10000, 100000
 
     # Load activity matrices
-    adj_matrix = np.genfromtxt(path+'/CDR/staticmetrics/Other/adj_matrix.csv', delimiter=',')
-    log_q_matrix = np.genfromtxt(path+'/CDR/staticmetrics/Other/log_q_matrix.csv', delimiter=',')
+    adj_matrix = np.genfromtxt(path+'/CDR/static_metrics/Other/adj_matrix.csv', delimiter=',')
+    log_q_matrix = np.genfromtxt(path+'/CDR/static_metrics/Other/log_q_matrix.csv', delimiter=',')
     where_nan = np.isnan(log_q_matrix)
     log_q_matrix[where_nan] = 0
-    deg_vector = np.genfromtxt(path+'/CDR/staticmetrics/Other/deg_vector.csv', delimiter=',')
+    deg_vector = np.genfromtxt(path+'/CDR/static_metrics/Other/degree_vector.csv', delimiter=',')
 
     ''' Median Degree '''
     # Remove links < median(weight)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     for i in range(num_bts):
         sum_row = np.sum(log_q_matrix[i, :], axis=0)
         entropy[i] = (-1*sum_row) / np.log10(deg_vector[i])
-    # np.savetxt(path+'/CDR/staticmetrics/Entropy/total_entropy.csv', entropy, delimiter=',')
+    # np.savetxt(path+'/CDR/static_metrics/Entropy/total_entropy.csv', entropy, delimiter=',')
 
     ''' Normalise by Population '''
     # Proportion of each cell tower associated with each administrative region
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     adm_4_pop = intersect_pop.groupby('Adm_4')['Pop_2010'].sum().reset_index()
 
     # Only use metric values of cell towers that exist
-    cell_tower_adm = pd.DataFrame(pd.read_csv(path+"/CDR/celltowers/CDR_Adm_1234.csv"))
+    cell_tower_adm = pd.DataFrame(pd.read_csv(path+"/CDR/cell_towers/bts_adm_1234.csv"))
     list = np.array(cell_tower_adm['CellTowerID'])
     entropy, total_deg, in_deg, out_deg = entropy[list], total_deg[list], in_deg[list], out_deg[list]
     cell_tower_adm['entropy'] = entropy
@@ -110,22 +110,22 @@ if __name__ == "__main__":
     out_deg_adm_4 = cell_tower_adm.groupby('ID_4')['out_deg'].sum().reset_index()['out_deg'] * (
         adm_4_pop['Pop_2010'] / cell_towers_adm_4)
     
-    # np.savetxt('/CDR/staticmetrics/Entropy/entropy_adm_1.csv', entropy_adm_1, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/Entropy/entropy_adm_2.csv', entropy_adm_2, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/Entropy/entropy_adm_3.csv', entropy_adm_3, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/Entropy/entropy_adm_4.csv', entropy_adm_4, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/total_deg_adm_1.csv', total_deg_adm_1, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/total_deg_adm_2.csv', total_deg_adm_2, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/total_deg_adm_3.csv', total_deg_adm_3, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/total_deg_adm_4.csv', total_deg_adm_4, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/in_deg_adm_1.csv', in_deg_adm_1, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/in_deg_adm_2.csv', in_deg_adm_2, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/in_deg_adm_3.csv', in_deg_adm_3, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/in_deg_adm_4.csv', in_deg_adm_4, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/out_deg_adm_1.csv', out_deg_adm_1, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/out_deg_adm_2.csv', out_deg_adm_2, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/out_deg_adm_3.csv', out_deg_adm_3, delimiter=',')
-    # np.savetxt('/CDR/staticmetrics/MedianDegree/out_deg_adm_4.csv', out_deg_adm_4, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/Entropy/entropy_adm_1.csv', entropy_adm_1, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/Entropy/entropy_adm_2.csv', entropy_adm_2, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/Entropy/entropy_adm_3.csv', entropy_adm_3, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/Entropy/entropy_adm_4.csv', entropy_adm_4, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/total_deg_adm_1.csv', total_deg_adm_1, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/total_deg_adm_2.csv', total_deg_adm_2, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/total_deg_adm_3.csv', total_deg_adm_3, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/total_deg_adm_4.csv', total_deg_adm_4, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/in_deg_adm_1.csv', in_deg_adm_1, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/in_deg_adm_2.csv', in_deg_adm_2, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/in_deg_adm_3.csv', in_deg_adm_3, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/in_deg_adm_4.csv', in_deg_adm_4, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/out_deg_adm_1.csv', out_deg_adm_1, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/out_deg_adm_2.csv', out_deg_adm_2, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/out_deg_adm_3.csv', out_deg_adm_3, delimiter=',')
+    # np.savetxt('/CDR/static_metrics/MedianDegree/out_deg_adm_4.csv', out_deg_adm_4, delimiter=',')
 
 
 

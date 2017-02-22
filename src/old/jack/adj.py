@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 
 # adj_matrix = np.genfromtxt('/Users/JackShipway/Desktop/UCLProject/Data/IvoryCoast/'
-#                                       'CDR/staticmetrics/Other/adj_matrix_civ.csv', delimiter=',')
+#                                       'CDR/static_metrics/Other/adj_matrix_civ.csv', delimiter=',')
 
 # activity = []
 # for i in range(1240):
