@@ -48,6 +48,27 @@ def malaria_rate(malaria, country):
                                            'Rapid_neg', 'Rapid_tot', 'Num_houses'].sum().reset_index()
     return malaria_2
 
+def child_mort_rate(child_mort, country):
+    """
+
+    :param child_mort:
+    :param country:
+    :return:
+    """
+
+    for i in pd.unique(child_mort.DHSClust):
+        count = pd.DataFrame(child_mort[child_mort['DHSClust'] == i]['AgeAtDeath'].value_counts())
+        count_dict = count.reset_index().set_index('index').to_dict()['AgeAtDeath']
+        print count_dict
+
+
+
+
+
+
+
+
+
 def hiv_rate(hiv, country):
     """
 
@@ -65,6 +86,8 @@ def hiv_rate(hiv, country):
             blood_tot.append(sum(count_dict[k] for k in count_dict.keys() if k >= 0))
         return [blood_pos, blood_neg, blood_tot]
     else:
-        print "HIV Data does not exist for Senegal"
+        print "HIV Data does not exist for Senegal."
+
+
 
 
