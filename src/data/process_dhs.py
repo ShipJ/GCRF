@@ -23,8 +23,7 @@ if __name__ == '__main__':
         malaria, child_mort, women_health_access, hiv, preventable_disease = [], [], [], [], []
 
 
-    # mal = process_dhs_funcs.malaria_rate(malaria, country)
-
+    mal = process_dhs_funcs.malaria_rate(malaria, country)
     hiv = process_dhs_funcs.hiv_rate(hiv, country)
 
 

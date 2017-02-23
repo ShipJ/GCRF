@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import sys
 
 
 def malaria_rate(malaria, country):
@@ -56,13 +55,16 @@ def hiv_rate(hiv, country):
     :param country:
     :return:
     """
-    blood_pos, blood_neg, blood_tot = [], [], []
-    for i in pd.unique(hiv['DHSClust']):
-        count = pd.DataFrame(hiv[hiv['DHSClust'] == i]['BloodResult'].value_counts())
-        count_dict = count.reset_index().set_index('index').to_dict()['BloodResult']
-        blood_neg.append(sum(count_dict[k] for k in count_dict.keys() if k == 0))
-        blood_pos.append(sum(count_dict[k] for k in count_dict.keys() if k == 1))
-        blood_tot.append(sum(count_dict[k] for k in count_dict.keys() if k >= 0))
-    return [blood_pos, blood_neg, blood_tot]
+    if country == 'civ':
+        blood_pos, blood_neg, blood_tot = [], [], []
+        for i in pd.unique(hiv['DHSClust']):
+            count = pd.DataFrame(hiv[hiv['DHSClust'] == i]['BloodResult'].value_counts())
+            count_dict = count.reset_index().set_index('index').to_dict()['BloodResult']
+            blood_neg.append(sum(count_dict[k] for k in count_dict.keys() if k == 0))
+            blood_pos.append(sum(count_dict[k] for k in count_dict.keys() if k == 1))
+            blood_tot.append(sum(count_dict[k] for k in count_dict.keys() if k >= 0))
+        return [blood_pos, blood_neg, blood_tot]
+    else:
+        print "HIV Data does not exist for Senegal"
 
 
