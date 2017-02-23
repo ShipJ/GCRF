@@ -98,11 +98,11 @@ def get_master(country):
 
 def get_dhs(country):
     malaria = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/malaria.csv' % country))
-    child_mort = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/malaria.csv' % country))
-    women_health_access = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/malaria.csv' % country))
-    preventable_disease = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/malaria.csv' % country))
+    child_mort = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/child_mort.csv' % country))
+    women_health_access = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/women_health_access.csv' % country))
+    preventable_disease = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/preventable_disease.csv' % country))
     if country == 'civ':
-        hiv = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/malaria.csv' % country))
+        hiv = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/hiv.csv' % country))
         return [malaria, child_mort, women_health_access, hiv, preventable_disease]
     else:
         return [malaria, child_mort, women_health_access, preventable_disease]
