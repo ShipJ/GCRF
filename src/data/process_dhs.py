@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import sys
 
+from src.data import  process_dhs_funcs
 from src.config import config
-
 
 if __name__ == '__main__':
     country = config.get_country()
@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
     dhs = config.get_dhs(country)
     for i in range(len(dhs)):
+        print "Reading DHS Data set %s: " % i
         dhs[i] = dhs[i].applymap(lambda x: -1 if isinstance(x, basestring) and x.isspace() else int(x))
 
     if country == 'civ':
@@ -21,8 +22,10 @@ if __name__ == '__main__':
     else:
         malaria, child_mort, women_health_access, hiv, preventable_disease = [], [], [], [], []
 
-    print women_health_access
 
+    # mal = process_dhs_funcs.malaria_rate(malaria, country)
+
+    hiv = process_dhs_funcs.hiv_rate(hiv, country)
 
 
 
