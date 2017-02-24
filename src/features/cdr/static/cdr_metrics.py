@@ -175,9 +175,9 @@ if __name__ == '__main__':
     country = config.get_country()
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
-    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/static_metrics/adj_matrix_vol.csv' % country,
+    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_vol.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/static_metrics/adj_matrix_dur.csv' % country,
+    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_dur.csv' % country,
                                    delimiter=',')
 
     # total_activity = activity(country, num_towers, adj_matrix_vol, adj_matrix_dur)
@@ -198,7 +198,7 @@ if __name__ == '__main__':
     #                index=None)
     # med_deg.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/med_degree.csv' % country,
     #                index=None)
-    introv.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/introversion.csv' % country,
+    introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
                    index=None)
     # graph.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country,
     #              index=None)

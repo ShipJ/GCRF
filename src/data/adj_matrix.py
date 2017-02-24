@@ -41,5 +41,5 @@ def adj_matrix(source, target, country):
 if __name__ == '__main__':
     country = config.get_country()
     source = '../../data/interim/%s/cdr/timestamp/' % country
-    target = '../../data/processed/%s/cdr/static_metrics' % country
+    target = '../../data/processed/%s/cdr/staticmetrics' % country
     adj_matrix(source, target, country)

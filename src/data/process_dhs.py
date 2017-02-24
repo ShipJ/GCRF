@@ -29,12 +29,21 @@ if __name__ == '__main__':
     # prevent_disease = process_dhs_funcs.prevent_disease(preventable_disease, country)
     women_health_access = process_dhs_funcs.health_access(women_health_access, country)
 
-    all_dhs = mal.merge(hiv,
-                        on='Adm_4').merge(child,
-                                          on='Adm_4').merge(women_health_access,
-                                                            on='Adm_4').set_index('Adm_4')
+    if country == 'civ':
+        all_dhs = mal.merge(hiv,
+                            on='Adm_4').merge(child,
+                                              on='Adm_4').merge(women_health_access,
+                                                                on='Adm_4').set_index('Adm_4')
+    elif country == 'sen':
+        all_dhs = mal.merge(child, on='Adm_4').set_index('Adm_4')
+    else:
+        print "Please Select an actual country"
+        all_dhs = []
+
     all_dhs = all_dhs.reindex(range(constants['Adm_4']+1)).reset_index()
-    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/cell_towers/Adm_1234.csv' % country))
-    all_dhs = pd.concat([all_dhs, adm], axis=1)
-    print all_dhs
+    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/celltowers/Adm_1234.csv' % country))
+    all_dhs = pd.DataFrame(all_dhs.merge(adm, on='Adm_4', how='outer'))
+
+    all_dhs.to_csv('../../data/processed/%s/dhs/master_dhs.csv' % country, index=None)
+
 

@@ -37,7 +37,7 @@ prop_act_adm_3 = proportional_activity.groupby('Adm_3')['Activity'].sum().reset_
 prop_act_adm_4 = proportional_activity.groupby('Adm_4')['Activity'].sum().reset_index()
 
 # Normalise CDR data by the population of the adm level (again, 4 different populations for 4 different adm's)
-dhs_population = pd.DataFrame(pd.read_csv('Data/IvoryCoast/Essential/dhs_clusters.csv',
+dhs_population = pd.DataFrame(pd.read_csv('Data/IvoryCoast/Essential/dhsclusters.csv',
                                           usecols=['DHSClust', 'Pop_1km', 'Adm_1',
                                                    'Adm_2', 'Adm_3', 'Adm_4']))
 dhs_pop_adm_1 = dhs_population.groupby('Adm_1')['Pop_1km'].sum().reset_index()
@@ -64,7 +64,7 @@ prop_act_adm_3['Activity_PP'] = np.array(prop_act_adm_3['Activity']) / np.array(
 prop_act_adm_4['Activity_PP'] = np.array(prop_act_adm_4['Activity']) / np.array(dhs_pop_adm_4['Pop_1km'])
 
 # DHS Wealth
-dhs_wealth = pd.DataFrame(pd.read_csv('Data/IvoryCoast/Essential/dhs_clusters.csv',
+dhs_wealth = pd.DataFrame(pd.read_csv('Data/IvoryCoast/Essential/dhsclusters.csv',
                                       usecols=['DHSClust', 'Z_Med', 'Adm_1',
                                                'Adm_2', 'Adm_3', 'Adm_4']))
 wealth_adm_1 = dhs_wealth.groupby(by='Adm_1')['Z_Med'].mean().reset_index()
@@ -72,7 +72,7 @@ wealth_adm_2 = dhs_wealth.groupby(by='Adm_2')['Z_Med'].mean().reset_index()
 wealth_adm_3 = dhs_wealth.groupby(by='Adm_3')['Z_Med'].mean().reset_index()
 wealth_adm_4 = dhs_wealth.groupby(by='Adm_4')['Z_Med'].mean().reset_index()
 
-dhs_poverty = pd.DataFrame(pd.read_csv('Data/IvoryCoast/Essential/dhs_clusters.csv',
+dhs_poverty = pd.DataFrame(pd.read_csv('Data/IvoryCoast/Essential/dhsclusters.csv',
                                       usecols=['DHSClust', 'Poverty', 'Adm_1',
                                                'Adm_2', 'Adm_3', 'Adm_4']))
 poverty_adm_1 = dhs_poverty.groupby(by='Adm_1')['Poverty'].mean().reset_index()
