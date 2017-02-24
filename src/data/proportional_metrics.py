@@ -67,6 +67,6 @@ if __name__ == '__main__':
     master = pd.DataFrame()
     master = pd.DataFrame(pd.concat([master, adm, all_features_adm_4], axis=1))
 
-    master.to_csv('../../data/processed/%s/cdr/all_cdr.csv' % country, index=None)
+    master.to_csv('../../data/processed/%s/cdr/master_cdr.csv' % country, index=None)
 
 
