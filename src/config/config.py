@@ -106,9 +106,9 @@ def get_dhs(country):
         return [malaria, child_mort, women_health_access, preventable_disease]
 
 def get_master_cdr(country):
-    return pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/master_cdr.csv' % country))
+    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/master_cdr.csv' % country))
 
 def get_master_dhs(country):
-    return pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/master_dhs.csv' % country))
+    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/dhs/master_dhs.csv' % country))
 
 
