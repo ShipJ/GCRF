@@ -32,10 +32,12 @@ def get_constants(country):
     :return:
     """
     if country == 'civ':
-        constants = {'country': 'civ', 'num_towers': 1240, 'hours': 3278}
+        constants = {'country': 'civ', 'num_towers': 1240, 'hours': 3278,
+                     'Adm_1': 11, 'Adm_2': 33, 'Adm_3': 111, 'Adm_4': 191}
         return constants
     elif country == 'sen':
-        constants = {'country': 'sen', 'num_towers': 1668, 'hours': 8733}
+        constants = {'country': 'sen', 'num_towers': 1668, 'hours': 8733,
+                     'Adm_1': 14, 'Adm_2': 45, 'Adm_3': 122, 'Adm_4': 431}
         return constants
     else:
         print "Please type the country abbreviation (lower case): "
