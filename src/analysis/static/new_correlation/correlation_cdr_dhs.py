@@ -3,6 +3,7 @@ import numpy as np
 from src.config import config
 from scipy.stats import pearsonr
 import matplotlib.pyplot as plt
+import sys
 
 
 def combine_cdr_dhs(a, b):
@@ -61,15 +62,21 @@ if __name__ == '__main__':
                 a = np.array(cdr_dhs_2[j])
                 b = np.array(cdr_dhs_2[k])
 
+                outliers = np.where(a > 0)
+                a = a[outliers]
+                b = b[outliers]
+
+                outliers2 = np.where(b > 0)
+                a = a[outliers2]
+                b = b[outliers2]
+
                 a = a[~is_outlier(a)]
                 b = b[~is_outlier(a)]
 
                 a = a[~is_outlier(b)]
                 b = b[~is_outlier(b)]
 
-                outliers = np.where(a>0)
-                a = a[outliers]
-                b = b[outliers]
+                print a, b
 
                 print i, j, k
 
