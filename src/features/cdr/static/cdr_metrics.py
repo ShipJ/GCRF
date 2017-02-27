@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import networkx as nx
+import sys
 
 from sklearn.linear_model import LinearRegression
 from src.config import config
@@ -146,16 +147,24 @@ def graph_metrics(adj_matrix):
     graph['Degree_centrality'] = np.array(degree.values())
     return graph
 
+
 def gravity(adj_matrix, dist_matrix, pop):
     """
 
     :param adj_matrix:
     :param pop:
     :param dist:
+    :param adm:
     :return:
     """
+    pop2 = pop.groupby('Adm_1')['Pop_2010'].sum().reset_index()
+
+
+
 
     ### X = log (Pop(a), Pop(b), dist(a, b))
+
+
     ### y = log(flows[flows > 0))
     X = 0
     y = 0
@@ -164,10 +173,10 @@ def gravity(adj_matrix, dist_matrix, pop):
     lm.fit(X, y)
 
     beta = np.concatenate(([np.exp(lm.intercept_)], lm.coef_))
-
     y_hat = beta[0] * X['Pop(A)'] ** beta[1] * X['Pop(B)'] ** beta[2] * X['dist(A,B)'] ** beta[3]
 
-    return lm.score(X, y)
+    residuals = 1
+
 
 
 
@@ -185,9 +194,20 @@ if __name__ == '__main__':
     # entropy = entropy(country, num_towers, adj_matrix_vol)
     # med_deg = med_degree(country, num_towers, adj_matrix_vol)
     # graph = graph_metrics(adj_matrix_vol)
-    introv = introversion(num_towers, adj_matrix_vol)
+    # introv = introversion(num_towers, adj_matrix_vol)
     # gravity = gravity(adj_matrix_vol, dist_matrix, pop)
     # radiation = radiation(adj_matrix_vol, dist_matrix, pop)
+
+    dist_matrix = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/'
+                                           'distance/dist_matrix_adm%s.csv' % (country, 1)))
+    pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/'
+                                           'correlation/master_cdr_dhs_other.csv' % country, usecols=['Adm_1',
+                                                                                                      'Pop_2010']))
+
+    print gravity(adj_matrix_vol, dist_matrix, pop)
+
+
+
 
     ''' Save to csv '''
     # total_activity.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/total_activity.csv' % country,
@@ -198,8 +218,8 @@ if __name__ == '__main__':
     #                index=None)
     # med_deg.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/med_degree.csv' % country,
     #                index=None)
-    introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
-                   index=None)
+    # introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
+    #                index=None)
     # graph.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country,
     #              index=None)
     # gravity.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/gravity.csv' % country,
