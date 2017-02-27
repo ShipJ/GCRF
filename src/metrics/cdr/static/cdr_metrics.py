@@ -8,12 +8,13 @@ import numpy as np
 import networkx as nx
 from sklearn.linear_model import LinearRegression
 from src.config import config
+import sys
 
 
-def activity(country, num_towers, adj_matrix_vol, adj_matrix_dur):
+def activity(num_towers, adj_matrix_vol, adj_matrix_dur):
     """
     Sum the total activity (volume and duration) of each cell tower over all time-steps.
-    :param country: str - country code.
+
     :param num_towers: int - number of cell towers.
     :param adj_matrix_vol:
     :param adj_matrix_dur:
@@ -39,10 +40,10 @@ def activity(country, num_towers, adj_matrix_vol, adj_matrix_dur):
     total_activity['Dur_self'] = duration_self
     return total_activity
 
-def degree_vector(country, num_towers, adj_matrix):
+def degree_vector(num_towers, adj_matrix):
     """
     Return the degree of each cell tower
-    :param country: str - country code.
+
     :param num_towers: int - number of cell towers.
     :param adj_matrix:
     :return: dataframe - contains total, in and out degree of each cell tower.
@@ -91,10 +92,9 @@ def entropy(country, num_towers, adj_matrix):
     ent['Entropy'] = S
     return ent
 
-def med_degree(country, num_towers, adj_matrix):
+def med_degree(num_towers, adj_matrix):
     """
 
-    :param country:
     :param num_towers:
     :param adj_matrix:
     :return:
@@ -151,36 +151,70 @@ def graph_metrics(adj_matrix):
     return graph
 
 
-def gravity(adj_matrix, dist_matrix, pop):
-    """
+def gravity(adj_matrix, dist_matrix, pop, country):
 
-    :param adj_matrix:
-    :param pop:
-    :param dist:
-    :param adm:
-    :return:
-    """
-    pop2 = pop.groupby('Adm_1')['Pop_2010'].sum().reset_index()
+    dist_matrix = dist_matrix.sort_values(by=['Source', 'Target']).reset_index(drop=True)
 
+    pop_ab = np.array(pop['Pop_2010'])
+    source = np.array(dist_matrix['Source'])
+    target = np.array(dist_matrix['Target'])
+    pop_a = []
+    pop_b = []
+    vol = []
 
+    for i in range(len(dist_matrix)):
+        pop_a.append(pop_ab[source[i]])
+        pop_b.append(pop_ab[target[i]])
+        vol.append(adj_matrix[source[i], target[i]])
 
+    dist_matrix['source'] = source
+    dist_matrix['target'] = target
+    dist_matrix['log_pop_source'] = np.log(pop_a)
+    dist_matrix['log_pop_target'] = np.log(pop_b)
+    dist_matrix['vol'] = np.log(vol)
 
-    ### X = log (Pop(a), Pop(b), dist(a, b))
+    dist_matrix = dist_matrix.replace([np.inf, -np.inf], np.nan)
+    dist_matrix = dist_matrix.dropna()
 
-
-    ### y = log(flows[flows > 0))
-    X = 0
-    y = 0
+    X = dist_matrix[['Distance(km)', 'log_pop_source', 'log_pop_target']]
+    y = dist_matrix[['vol']]
+    z = np.array(dist_matrix['vol'])
 
     lm = LinearRegression()
     lm.fit(X, y)
 
-    beta = np.concatenate(([np.exp(lm.intercept_)], lm.coef_))
-    y_hat = beta[0] * X['Pop(A)'] ** beta[1] * X['Pop(B)'] ** beta[2] * X['dist(A,B)'] ** beta[3]
+    y_hat = np.array(lm.intercept_[0] * X['log_pop_source'] ** lm.coef_[0][0] * X['log_pop_target'] ** lm.coef_[0][1] * X['Distance(km)'] ** lm.coef_[0][2])
 
-    residuals = 1
+    residuals = np.array(z - y_hat)
+    g_residuals = pd.DataFrame()
+    g_residuals['source'] = np.array(dist_matrix['source'])
+    g_residuals['target'] = np.array(dist_matrix['target'])
+    g_residuals['residual'] = residuals
+
+    g_residuals = g_residuals.replace([np.inf, -np.inf], np.nan)
+    g_residuals = g_residuals.dropna()
+
+    adm = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/celltowers/bts_adm_1234.csv' % country))
+    g_residuals_adm = pd.DataFrame()
+    g_residuals_adm['Adm_4'] = np.array(sorted(pd.unique(adm['Adm_4'])))
+
+    neg_resids_adm = []
+    for i in sorted(pd.unique(adm['Adm_4'])):
+        bts = np.array(adm[adm['Adm_4'] == i]['CellTowerID'])
+
+        total_neg_resids = []
+        for j in bts:
+            all_resids = g_residuals[g_residuals['source'] == j]
+            neg_resids = np.array(all_resids[all_resids['residual'] < 0]['residual'])
+            total_neg_resids = np.concatenate([total_neg_resids, neg_resids])
+        mean_neg_resids = np.mean(total_neg_resids)
+        neg_resids_adm.append(mean_neg_resids)
+
+    g_residuals_adm['residuals'] = np.array(neg_resids_adm)
+    return g_residuals_adm
 
 
+# def volatility(adj_matrix_temporal):
 
 
 if __name__ == '__main__':
@@ -201,13 +235,25 @@ if __name__ == '__main__':
     # gravity = gravity(adj_matrix_vol, dist_matrix, pop)
     # radiation = radiation(adj_matrix_vol, dist_matrix, pop)
 
-    dist_matrix = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/'
-                                           'distance/dist_matrix_adm%s.csv' % (country, 1)))
-    pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/'
-                                           'correlation/master_cdr_dhs_other.csv' % country, usecols=['Adm_1',
-                                                                                                      'Pop_2010']))
 
-    print gravity(adj_matrix_vol, dist_matrix, pop)
+
+    # a = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country))
+    # a['Distance(km)'] = (a['Distance'] * 132)
+    # a = pd.DataFrame(a.drop('Distance', axis=1))
+    # a.columns = ['Source', 'Target', 'Distance(km)']
+    # a.to_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country, index=None)
+
+
+    # pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/IntersectPop.csv' % country))
+    # bts_pop = pop.groupby('CellTowerID')['Pop_2010'].sum().reset_index()
+    # bts_pop = pd.DataFrame(bts_pop.set_index('CellTowerID').reindex(np.array(range(1669))).reset_index())
+    # bts_pop.to_csv('../../../../data/processed/%s/pop/bts_voronoi_pop.csv' % country, index=None)
+
+
+    dist_matrix = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country))
+    pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/bts_voronoi_pop.csv' % country))
+
+    print gravity(adj_matrix_vol, dist_matrix, pop, country)
 
 
     ''' Save to csv '''
