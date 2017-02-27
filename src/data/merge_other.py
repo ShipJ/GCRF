@@ -30,10 +30,12 @@ if __name__ == '__main__':
 
     master = pd.DataFrame(master_cdr_dhs_other.merge(pop, on='Adm_4', how='outer'))
 
+
+
+    cdr = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/master_cdr.csv' % country))
+    master = master.merge(cdr, on='Adm_4', how='outer')
+
     master.to_csv('../../data/processed/%s/correlation/master_cdr_dhs_other.csv' % country, index=None)
-
-
-
 
 
 
