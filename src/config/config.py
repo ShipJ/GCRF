@@ -1,10 +1,11 @@
+"""
+This file contains various functions that are used by different scripts, as well
+as providing constant values for different countries - i.e. data that will not change.
+"""
+
 import numpy as np
 import pandas as pd
 
-"""
-This file contains various functions that used by various scripts, as well as providing constant values for
-different countries - i.e. data that will not change.
-"""
 
 def get_country():
     """
