@@ -2,7 +2,7 @@ import pandas as pd
 from src.config import config
 
 country = config.get_country()
-master = config.get_master(country)
+master = config.get_master_dhs(country)
 dhs = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/Master.csv' % country))
 
 master = pd.DataFrame(pd.concat([master, dhs[['Area(m^2)', 'Area(km^2)', 'Poverty', 'Wealth', 'Blood_pos',
