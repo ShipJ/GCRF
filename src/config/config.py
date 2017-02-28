@@ -108,15 +108,15 @@ def get_dhs(country):
 
 
 def get_master_cdr(country):
-    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/master_cdr.csv' % country))
+    return pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/master_cdr.csv' % country))
 
 
 def get_master_dhs(country):
-    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/dhs/master_dhs.csv' % country))
+    return pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/master_dhs.csv' % country))
 
 
 def get_master_other(country):
-    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/dhs/wealth/DHSData.csv' % country,
+    return pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/wealth/DHSData.csv' % country,
                                     usecols=['UrbRur', 'Poverty', 'Z_Med', 'Capital', 'Pop_1km',
                                              'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
 
