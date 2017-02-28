@@ -108,7 +108,7 @@ def get_dhs(country):
 
 
 def get_master_cdr(country):
-    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/master_cdr.csv' % country))
+    return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/master_cdr.csv' % country))
 
 
 def get_master_dhs(country):
