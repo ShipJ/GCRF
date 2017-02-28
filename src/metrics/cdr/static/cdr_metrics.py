@@ -8,7 +8,6 @@ import numpy as np
 import networkx as nx
 from sklearn.linear_model import LinearRegression
 from src.config import config
-import sys
 
 
 def activity(num_towers, adj_matrix_vol, adj_matrix_dur):
@@ -212,9 +211,6 @@ def gravity(adj_matrix, dist_matrix, pop, country):
 
     g_residuals_adm['residuals'] = np.array(neg_resids_adm)
     return g_residuals_adm
-
-
-# def volatility(adj_matrix_temporal):
 
 
 if __name__ == '__main__':
