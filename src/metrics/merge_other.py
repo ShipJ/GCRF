@@ -1,20 +1,11 @@
 import pandas as pd
-import numpy as np
 from src.config import config
-
-
-
-
-
 
 if __name__ == '__main__':
     country = config.get_country()
     master = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/master_dhs.csv' % country))
 
     mode = lambda x: x.value_counts().index[0]
-
-
-
     other = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/wealth/DHSData.csv' % country,
                                      usecols=['UrbRur', 'Poverty', 'Z_Med', 'Capital', 'Pop_1km',
                                               'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
