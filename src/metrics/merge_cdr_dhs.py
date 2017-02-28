@@ -47,7 +47,7 @@ if __name__ == '__main__':
     cdr_dhs = merge_cdr_dhs(cdr, dhs)
     cdr_dhs_other = merge_other(cdr_dhs, other)
 
-    cdr_dhs_other.to_csv('../../data/processed/%s/master.csv' % country, index=None)
+    cdr_dhs.to_csv('../../data/processed/%s/master.csv' % country, index=None)
 
 
 
