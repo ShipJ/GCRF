@@ -18,6 +18,12 @@ def merge_cdr_dhs(a, b):
 
 
 def merge_other(cdr_dhs, other):
+    """
+
+    :param cdr_dhs:
+    :param other:
+    :return:
+    """
     mode = lambda x: x.value_counts().index[0]
 
     urbrurcapital = other.groupby('Adm_4')['UrbRur', 'Capital'].agg(mode).reset_index()
@@ -37,10 +43,11 @@ if __name__ == '__main__':
     cdr = config.get_master_cdr(country)
     dhs = config.get_master_dhs(country)
     other = config.get_master_other(country)
+
     cdr_dhs = merge_cdr_dhs(cdr, dhs)
     cdr_dhs_other = merge_other(cdr_dhs, other)
 
-    print cdr_dhs_other
+    cdr_dhs_other.to_csv('../../data/processed/%s/master.csv' % country, index=None)
 
 
 
