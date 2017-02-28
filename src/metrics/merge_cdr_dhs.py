@@ -36,6 +36,8 @@ def merge_other(cdr_dhs, other):
                                                                          how='outer'), index=None)
     return master_cdr_dhs_other
 
+def merge_popdensity(cdr_dhs, popdense):
+    return pd.DataFrame(cdr_dhs.merge(popdense, on=['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4'])).dropna()
 
 if __name__ == '__main__':
 
@@ -43,11 +45,14 @@ if __name__ == '__main__':
     cdr = config.get_master_cdr(country)
     dhs = config.get_master_dhs(country)
     other = config.get_master_other(country)
+    popdense = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/popdensity.csv' % country))
 
     cdr_dhs = merge_cdr_dhs(cdr, dhs)
     cdr_dhs_other = merge_other(cdr_dhs, other)
 
-    cdr_dhs.to_csv('../../data/processed/%s/master.csv' % country, index=None)
+    cdr_dhs_other_pop = merge_popdensity(cdr_dhs_other, popdense)
+
+    cdr_dhs_other_pop.to_csv('../../data/processed/%s/master_pop.csv' % country, index=None)
 
 
 
