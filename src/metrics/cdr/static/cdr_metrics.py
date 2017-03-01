@@ -151,6 +151,15 @@ def graph_metrics(adj_matrix):
 
 
 def gravity(adj_matrix, dist_matrix, pop, country):
+    """
+    Computes the ..
+    - takes a slightly different approach in that it does not result in a 'cell-tower' level metrics
+    :param adj_matrix:
+    :param dist_matrix:
+    :param pop:
+    :param country:
+    :return:
+    """
 
     dist_matrix = dist_matrix.sort_values(by=['Source', 'Target']).reset_index(drop=True)
 
@@ -193,24 +202,24 @@ def gravity(adj_matrix, dist_matrix, pop, country):
     g_residuals = g_residuals.replace([np.inf, -np.inf], np.nan)
     g_residuals = g_residuals.dropna()
 
-    adm = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/celltowers/bts_adm_1234.csv' % country))
-    g_residuals_adm = pd.DataFrame()
-    g_residuals_adm['Adm_4'] = np.array(sorted(pd.unique(adm['Adm_4'])))
+    neg_res = []
+    for bts in pd.unique(g_residuals['source']):
+        bts_residuals = g_residuals[g_residuals['source'] == bts]
+        neg_res.append(sum(bts_residuals[bts_residuals['residual'] < 0]['residual']))
+    g_resids = pd.DataFrame()
+    g_resids['CellTowerID'] = pd.unique(g_residuals['source'])
+    g_resids['Residuals'] = np.array(neg_res)
 
-    neg_resids_adm = []
-    for i in sorted(pd.unique(adm['Adm_4'])):
-        bts = np.array(adm[adm['Adm_4'] == i]['CellTowerID'])
+    bts_adm = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/celltowers/bts_adm_1234.csv' % country))
 
-        total_neg_resids = []
-        for j in bts:
-            all_resids = g_residuals[g_residuals['source'] == j]
-            neg_resids = np.array(all_resids[all_resids['residual'] < 0]['residual'])
-            total_neg_resids = np.concatenate([total_neg_resids, neg_resids])
-        mean_neg_resids = np.mean(total_neg_resids)
-        neg_resids_adm.append(mean_neg_resids)
+    g_resids = g_resids.merge(bts_adm[['CellTowerID', 'Adm_1', 'Adm_2',
+                                       'Adm_3', 'Adm_4']], on='CellTowerID', how='outer')
 
-    g_residuals_adm['residuals'] = np.array(neg_resids_adm)
-    return g_residuals_adm
+    full = pd.DataFrame()
+    full['CellTowerID'] = range(1668)
+
+    g_resids = pd.DataFrame(g_resids.merge(full, on='CellTowerID', how='outer'))
+    return g_resids.sort_values('CellTowerID')
 
 
 if __name__ == '__main__':
@@ -249,7 +258,7 @@ if __name__ == '__main__':
     dist_matrix = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country))
     pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/bts_voronoi_pop.csv' % country))
 
-    print gravity(adj_matrix_vol, dist_matrix, pop, country)
+    gravity = gravity(adj_matrix_vol, dist_matrix, pop, country)
 
 
     ''' Save to csv '''
@@ -265,8 +274,8 @@ if __name__ == '__main__':
     #                index=None)
     # graph.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country,
     #              index=None)
-    # gravity.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/gravity.csv' % country,
-    #                index=None)
+    gravity.to_csv('../../../../data/processed/%s/cdr/staticmetrics/gravity.csv' % country,
+                   index=None)
     # radiation.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/radiation.csv' % country,
     #                  index=None)
 

@@ -111,13 +111,7 @@ sys.exit()
 data = np.genfromtxt('/Users/JackShipway/Desktop/new.csv', delimiter=',', usecols=(0,1,2,3,4))
 # data = data[~np.isnan(data).any(axis=1)][1:]
 
-data_normalised = np.zeros(data.shape)
-for i in range(data.shape[1]):  # Normalise data by subtracting feature means from each value
-    feature = data[:, i]
-    mean = np.mean(feature)  # Compute feature mean
-    std = np.std(feature)  # Compute feature standard deviation
-    feature_z = (feature - mean) / std  # Compute z-score based on computed mean and std
-    data_normalised[:, i] = feature_z
+
 
 mae = []
 for i in range(5):
