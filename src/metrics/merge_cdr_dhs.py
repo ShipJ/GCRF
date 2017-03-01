@@ -42,17 +42,35 @@ def merge_popdensity(cdr_dhs, popdense):
 if __name__ == '__main__':
 
     country = config.get_country()
-    cdr = config.get_master_cdr(country)
-    dhs = config.get_master_dhs(country)
-    other = config.get_master_other(country)
-    popdense = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/popdensity.csv' % country))
+    # cdr = config.get_master_cdr(country)
+    # dhs = config.get_master_dhs(country)
+    # other = config.get_master_other(country)
+    # popdense = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/popdensity.csv' % country))
+    #
+    # cdr_dhs = merge_cdr_dhs(cdr, dhs)
+    # cdr_dhs_other = merge_other(cdr_dhs, other)
+    #
+    # cdr_dhs_other_pop = merge_popdensity(cdr_dhs_other, popdense)
+    #
+    # cdr_dhs_other_pop.to_csv('../../data/processed/%s/master_pop.csv' % country, index=None)
 
-    cdr_dhs = merge_cdr_dhs(cdr, dhs)
-    cdr_dhs_other = merge_other(cdr_dhs, other)
+    master = pd.DataFrame(pd.read_csv('../../data/processed/%s/master_pop.csv' % country))
+    print master
 
-    cdr_dhs_other_pop = merge_popdensity(cdr_dhs_other, popdense)
 
-    cdr_dhs_other_pop.to_csv('../../data/processed/%s/master_pop.csv' % country, index=None)
+    gravity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/gravity.csv' % country)).dropna()
+
+    g_residual_adm4 = gravity.groupby('Adm_4')['Residuals'].mean().reset_index()
+
+    grav = pd.DataFrame()
+    grav['Adm_4'] = range(1,192)
+    grav = grav.merge(g_residual_adm4, on='Adm_4', how='outer')
+
+    master = pd.DataFrame(master.merge(grav, on='Adm_4'))
+
+    master.to_csv('../../data/processed/%s/master_pop2.csv' % country, index=None)
+
+
 
 
 
