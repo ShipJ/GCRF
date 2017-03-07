@@ -20,17 +20,20 @@ def mean_absolute_deviation(df, i, j):
     return df
 
 
-def z_score(df):
-    z_scores = np.array((df-np.mean(df))/np.std(df))
-    outliers = z_scores[z_scores > 3.5*np.mean(z_scores)]
+def z_outliers(df):
+    outliers = df[df > 3*np.mean(df)]
     return outliers
 
-data = pd.DataFrame(pd.read_csv('../../../data/processed/civ/master_pop2.csv')).dropna()
+def z_score(df):
+    z_scores = np.array((df-np.mean(df))/np.std(df))
+    return z_scores
+
+data = pd.DataFrame(pd.read_csv('../../../data/final/civ/master.csv')).dropna()
 data['log_vol'] = np.log(data['Vol'])
 data['vol_pp'] = data['Vol']/data['Pop_2010']
-data['log_pop_dense'] = np.log(data['Pop_2010']/data['Area(km^2)'])
+data['log_pop_dense'] = np.log(data['Pop_2010']/data['Area_km2'])
 
-for i in ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']:
+for i in ['Adm_4']:
 
     dhs_i = data.groupby(i)['BloodPosRate', 'RapidPosRate', 'HIVPosRate',
                             'DeathRate', 'HealthAccessDifficulty', 'Z_Med'].mean().reset_index()
@@ -47,8 +50,11 @@ for i in ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']:
             a = cdr_i.groupby(i)[k].sum().reset_index()
             b = a.merge(dhs_i.groupby(i)[j].sum().reset_index(), on=i)
             compare = mean_absolute_deviation(b, j, k).dropna()
-            c = np.array(compare[j])
-            d = np.array(compare[k])
+
+            c = np.log(np.array(compare[j]))
+            d = np.log(np.array(compare[k]))
+
+            # Get rid of zero data
             zero_c = np.where(c != 0)
             c = c[zero_c]
             d = d[zero_c]
@@ -56,12 +62,17 @@ for i in ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']:
             c = c[zero_d]
             d = d[zero_d]
 
+            c = z_score(c)
+            d = z_score(d)
 
             print i, j, k
             print pearsonr(c, d)
             plt.scatter(c, d)
             plt.show()
 
+            plt.scatter(c, (c-d))
+            plt.show()
+        sys.exit()
 
 
 
