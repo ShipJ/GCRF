@@ -14,7 +14,7 @@ other = data.groupby('Adm_3')['poverty_rate', 'z_median', 'pop_1km'].mean().rese
 cdr_sum = cdr.groupby('Adm_3')['Vol', 'Vol_in', 'Vol_out', 'Dur', 'Dur_in', 'Dur_out'].sum().reset_index()
 cdr_mean = cdr.groupby('Adm_3')['Entropy', 'Introversion', 'Med_degree', 'Degree_centrality',
                                 'EigenvectorCentrality', 'Pagerank'].mean().reset_index()
-cdr_grav = pd.DataFrame(pd.read_csv('../../../data/processed/sen/cdr/staticmetrics/gravity.csv')).dropna()
+cdr_grav = pd.DataFrame(pd.read_csv('../../../data/processed/sen/cdr/metrics/gravity.csv')).dropna()
 cdr_grav = cdr_grav.groupby('Adm_3')['Residuals'].mean().reset_index()
 
 cdr = cdr_sum.merge(cdr_mean, on='Adm_3').merge(cdr_grav, on='Adm_3').merge(other, on='Adm_3')

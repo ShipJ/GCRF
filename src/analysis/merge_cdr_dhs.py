@@ -58,7 +58,7 @@ if __name__ == '__main__':
     print master
 
 
-    gravity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/gravity.csv' % country)).dropna()
+    gravity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/metrics/gravity.csv' % country)).dropna()
 
     g_residual_adm4 = gravity.groupby('Adm_4')['Residuals'].mean().reset_index()
 

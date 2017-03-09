@@ -71,8 +71,8 @@ def get_adj_matrix(country):
         """
     source = get_dir()
     if country in ['civ', 'sen']:
-        adj_vol = np.genfromtxt(source + '/processed/%s/cdr/staticmetrics/adj_matrix_vol.csv' % country, delimiter=',')
-        adj_dur = np.genfromtxt(source + '/processed/%s/cdr/staticmetrics/adj_matrix_dur.csv' % country, delimiter=',')
+        adj_vol = np.genfromtxt(source + '/processed/%s/cdr/metrics/adj_matrix_vol.csv' % country, delimiter=',')
+        adj_dur = np.genfromtxt(source + '/processed/%s/cdr/metrics/adj_matrix_dur.csv' % country, delimiter=',')
         return adj_vol, adj_dur
     else:
         print "Please type a correct country abbreviation (lower case): \n"
@@ -108,12 +108,12 @@ def get_pop(country, *args):
 
 def get_cdr_metrics(country):
     source = get_dir()
-    activity = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/total_activity.csv' % country))
-    entropy = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/entropy.csv' % country))
-    med_degree = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/med_degree.csv' % country))
-    graph = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/graph_metrics.csv' % country))
-    introversion = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/introversion.csv' % country))
-    residuals = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/residuals.csv' % country))
+    activity = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/total_activity.csv' % country))
+    entropy = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/entropy.csv' % country))
+    med_degree = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/med_degree.csv' % country))
+    graph = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/graph_metrics.csv' % country))
+    introversion = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/introversion.csv' % country))
+    residuals = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/residuals.csv' % country))
     # Insert some kind of merge function to return one dataframe, push into the func below
     return activity, entropy, med_degree, graph, introversion, residuals
 

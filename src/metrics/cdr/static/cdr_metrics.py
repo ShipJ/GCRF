@@ -210,7 +210,7 @@ def gravity(adj_matrix, dist_matrix, pop, country):
     g_resids['CellTowerID'] = pd.unique(g_residuals['source'])
     g_resids['Residuals'] = np.array(neg_res)
 
-    bts_adm = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/celltowers/bts_adm_1234.csv' % country))
+    bts_adm = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
 
     g_resids = g_resids.merge(bts_adm[['CellTowerID', 'Adm_1', 'Adm_2',
                                        'Adm_3', 'Adm_4']], on='CellTowerID', how='outer')
@@ -226,9 +226,9 @@ if __name__ == '__main__':
     country = config.get_country()
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
-    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_vol.csv' % country,
+    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/metrics/adj_matrix_vol.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/adj_matrix_dur.csv' % country,
+    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/metrics/adj_matrix_dur.csv' % country,
                                    delimiter=',')
 
     # total_activity = activity(country, num_towers, adj_matrix_vol, adj_matrix_dur)
@@ -274,7 +274,7 @@ if __name__ == '__main__':
     #                index=None)
     # graph.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country,
     #              index=None)
-    gravity.to_csv('../../../../data/processed/%s/cdr/staticmetrics/gravity.csv' % country,
+    gravity.to_csv('../../../../data/processed/%s/cdr/metrics/gravity.csv' % country,
                    index=None)
     # radiation.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/radiation.csv' % country,
     #                  index=None)

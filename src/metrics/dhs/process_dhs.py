@@ -46,7 +46,7 @@ if __name__ == '__main__':
         all_dhs = []
 
     all_dhs = all_dhs.reindex(range(constants['Adm_4']+1)).reset_index()
-    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/celltowers/Adm_1234.csv' % country))
+    adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/bts/Adm_1234.csv' % country))
     all_dhs = pd.DataFrame(all_dhs.merge(adm, on='Adm_4', how='outer'))
 
     # all_dhs.to_csv('../../data/processed/%s/dhs/master_dhs.csv' % country, index=None)

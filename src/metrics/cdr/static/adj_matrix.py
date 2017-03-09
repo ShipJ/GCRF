@@ -21,7 +21,6 @@ def adj_matrix(source, country):
 
     :param source: string - file path to raw data.
     :param country: str - country code.
-
     :return: None.
     """
 
@@ -32,7 +31,8 @@ def adj_matrix(source, country):
     coo_vol = sparse.coo_matrix((num_towers, num_towers))
     coo_dur = sparse.coo_matrix((num_towers, num_towers))
 
-    for f in os.listdir(source):
+    time_stamped = [i for i in os.listdir(source) if not i.startswith('.')]
+    for f in time_stamped:
         print "Reading: %s" % f
         cdr = pd.read_csv((source+f), usecols=['source', 'target', 'activity', 'duration']).as_matrix()
         # -1: cdr where origin/target cell tower unknown
@@ -51,10 +51,14 @@ def adj_matrix(source, country):
 
 if __name__ == '__main__':
     country = config.get_country()
-    source = '../../../../data/interim/%s/cdr/timestamp/' % country
-    target = '../../../../data/processed/%s/cdr/staticmetrics' % country
+    data_source = config.get_dir()
 
-    vol, dur = adj_matrix(source, country)
+    source = data_source+'/interim/%s/cdr/timestamp/' % country
+    target = data_source+'/processed/%s/cdr/adjacency' % country
 
-    # np.savetxt(target+'/adj_matrix_vol.csv', vol, delimiter=',')
-    # np.savetxt(target+'/adj_matrix_dur.csv', dur, delimiter=',')
+    try:
+        vol, dur = adj_matrix(source, country)
+        np.savetxt(target+'/adj_matrix_vol.csv', vol, delimiter=',')
+        np.savetxt(target+'/adj_matrix_dur.csv', dur, delimiter=',')
+    except ValueError:
+        print 'Looks like your data is missing from interim/%s/cdr/timestamp.' % country
