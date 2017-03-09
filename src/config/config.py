@@ -118,7 +118,7 @@ def get_cdr_metrics(country):
     return activity, entropy, med_degree, graph, introversion, residuals
 
 
-def get_dhs(country):
+def get_raw_dhs(country):
     """
 
     :param country:
