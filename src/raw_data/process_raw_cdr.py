@@ -78,10 +78,11 @@ def save_timestamp(time_stamped, target):
 if __name__ == '__main__':
     # Ask user for country code and data set
     country = config.get_country()
+    data_source = config.get_dir()
     data_set = get_data()
 
     # Grab data from raw, process, save to interim
-    source = '../../data/raw/%s/CDR%s' % (country, data_set)
-    target = '../../data/interim/%s/CDR/timestamp/' % country
+    source = data_source+'/raw/%s/CDR%s' % (country, data_set)
+    target = source+'/interim/%s/CDR/timestamp/' % country
 
     process_raw(source, target, country)
