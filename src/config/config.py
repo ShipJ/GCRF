@@ -6,7 +6,6 @@ as providing constant values for different countries - i.e. data that will not c
 import numpy as np
 import pandas as pd
 import os
-import sys
 
 
 def get_dir():
