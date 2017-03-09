@@ -1,5 +1,5 @@
 """
-This module computes all of the CDR-derived metrics as discussed in literature.
+This module computes the CDR-derived metrics as discussed in literature.
 It saves the results at the cell tower level, to individual csv files.
 """
 
