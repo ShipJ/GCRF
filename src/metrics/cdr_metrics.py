@@ -8,9 +8,10 @@ import numpy as np
 import networkx as nx
 from sklearn.linear_model import LinearRegression
 from src.config import config
+import sys
 
 
-def activity(num_towers, adj_matrix_vol, adj_matrix_dur):
+def activity(num_towers, adj_matrix_v, adj_matrix_d):
     """
     Sum the total activity (volume and duration) of each cell tower over all time-steps.
 
@@ -22,8 +23,8 @@ def activity(num_towers, adj_matrix_vol, adj_matrix_dur):
     volume_total, volume_in, volume_out, volume_self = [], [], [], []
     duration_total, duration_in, duration_out, duration_self = [], [], [], []
     for i in range(num_towers):
-        vol_self, vol_in, vol_out = adj_matrix_vol[i, i], np.sum(adj_matrix_vol[:, i]), np.sum(adj_matrix_vol[i, :])
-        dur_self, dur_in, dur_out = adj_matrix_dur[i, i], np.sum(adj_matrix_dur[:, i]), np.sum(adj_matrix_dur[i, :])
+        vol_self, vol_in, vol_out = adj_matrix_v[i, i], np.sum(adj_matrix_v[:, i]), np.sum(adj_matrix_v[i, :])
+        dur_self, dur_in, dur_out = adj_matrix_d[i, i], np.sum(adj_matrix_d[:, i]), np.sum(adj_matrix_d[i, :])
         volume_in.append(vol_in), volume_out.append(vol_out), volume_self.append(vol_self)
         duration_in.append(dur_in), duration_out.append(dur_out), duration_self.append(dur_self)
         volume_total.append(vol_in + vol_out - vol_self), duration_total.append(dur_in + dur_out - dur_self)
@@ -61,7 +62,7 @@ def degree_vector(num_towers, adj_matrix):
     deg_vec['Out_degree'] = out_degree
     return deg_vec
 
-def entropy(country, num_towers, adj_matrix):
+def entropy(activity, adj_matrix, deg_vector):
     """
     Compute the normalised entropy of each cell tower in the data set.
     :param country:
@@ -69,11 +70,10 @@ def entropy(country, num_towers, adj_matrix):
     :param adj_matrix:
     :return:
     """
-    total_activity, deg_vector = config.get_cdr_features(country)
-    total_activity = total_activity.as_matrix()
     deg_vector = deg_vector.as_matrix()
+    activity = activity.as_matrix()
 
-    q_matrix = adj_matrix / total_activity[:, 1, None]
+    q_matrix = adj_matrix / activity[:, 1, None]
     where_nan = np.where(np.isnan(q_matrix))
     q_matrix[where_nan] = 0
     log_q_matrix = np.log(q_matrix)
@@ -98,18 +98,19 @@ def med_degree(num_towers, adj_matrix):
     :param adj_matrix:
     :return:
     """
+    adj = adj_matrix.copy()
 
     for i in range(num_towers):
-        row_col = np.concatenate((adj_matrix[i, :], adj_matrix[:, i]))
+        row_col = np.concatenate((adj[i, :], adj[:, i]))
         row_col_self = np.delete(row_col, i)
         median_weight = np.median(row_col_self) - 0.1
-        adj_matrix[:, i][np.where(adj_matrix[i, :] < median_weight)] = 0
-        adj_matrix[i, :][np.where(adj_matrix[:, i] < median_weight)] = 0
+        adj[:, i][np.where(adj[i, :] < median_weight)] = 0
+        adj[i, :][np.where(adj[:, i] < median_weight)] = 0
 
-    adj_matrix[adj_matrix > 0] = 1
+    adj[adj > 0] = 1
     total_deg = np.zeros(num_towers)
     for i in range(num_towers):
-        total_deg[i] = np.sum(np.delete(np.concatenate((adj_matrix[i, :], adj_matrix[:, i])), i))
+        total_deg[i] = np.sum(np.delete(np.concatenate((adj[i, :], adj[:, i])), i))
 
     med_deg = pd.DataFrame()
     med_deg['CellTowerID'] = np.array(range(num_towers))
@@ -150,14 +151,14 @@ def graph_metrics(adj_matrix):
     return graph
 
 
-def gravity(adj_matrix, dist_matrix, pop, country):
+def g_residuals(adj_matrix, dist_matrix, pop, bts_adm, num_towers):
     """
     Computes the ..
     - takes a slightly different approach in that it does not result in a 'cell-tower' level metrics
     :param adj_matrix:
     :param dist_matrix:
     :param pop:
-    :param country:
+    :param bts_adm:
     :return:
     """
 
@@ -208,75 +209,42 @@ def gravity(adj_matrix, dist_matrix, pop, country):
         neg_res.append(sum(bts_residuals[bts_residuals['residual'] < 0]['residual']))
     g_resids = pd.DataFrame()
     g_resids['CellTowerID'] = pd.unique(g_residuals['source'])
-    g_resids['Residuals'] = np.array(neg_res)
-
-    bts_adm = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
+    g_resids['G_residuals'] = np.array(neg_res)
 
     g_resids = g_resids.merge(bts_adm[['CellTowerID', 'Adm_1', 'Adm_2',
                                        'Adm_3', 'Adm_4']], on='CellTowerID', how='outer')
 
     full = pd.DataFrame()
-    full['CellTowerID'] = range(1668)
+    full['CellTowerID'] = range(num_towers)
 
     g_resids = pd.DataFrame(g_resids.merge(full, on='CellTowerID', how='outer'))
-    return g_resids.sort_values('CellTowerID')
+    return g_resids
 
 
 if __name__ == '__main__':
     country = config.get_country()
+    source = config.get_dir()
+
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
-    adj_matrix_vol = np.genfromtxt('../../../../data/processed/%s/cdr/metrics/adj_matrix_vol.csv' % country,
+
+    adj_matrix_vol = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt('../../../../data/processed/%s/cdr/metrics/adj_matrix_dur.csv' % country,
+    adj_matrix_dur = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
                                    delimiter=',')
 
-    # total_activity = activity(country, num_towers, adj_matrix_vol, adj_matrix_dur)
-    # deg_vector = degree_vector(country, num_towers, adj_matrix_vol)
-    # entropy = entropy(country, num_towers, adj_matrix_vol)
-    # med_deg = med_degree(country, num_towers, adj_matrix_vol)
-    # graph = graph_metrics(adj_matrix_vol)
-    # introv = introversion(num_towers, adj_matrix_vol)
-    # gravity = gravity(adj_matrix_vol, dist_matrix, pop)
-    # radiation = radiation(adj_matrix_vol, dist_matrix, pop)
+    total_activity = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
+    deg_vector = degree_vector(num_towers, adj_matrix_vol)
+    entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
+    med_deg = med_degree(num_towers, adj_matrix_vol)
+    graph = graph_metrics(adj_matrix_vol)
+    introv = introversion(num_towers, adj_matrix_vol)
+    dist_matrix = pd.DataFrame(pd.read_csv(source+'/processed/%s/distance/dist_matrix_bts.csv' % country))
+    pop = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
+    bts_adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
+    g_residuals = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
 
+    dfs = [total_activity, entropy, med_deg, graph, introv, g_residuals]
 
-
-    # a = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country))
-    # a['Distance(km)'] = (a['Distance'] * 132)
-    # a = pd.DataFrame(a.drop('Distance', axis=1))
-    # a.columns = ['Source', 'Target', 'Distance(km)']
-    # a.to_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country, index=None)
-
-
-    # pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/intersect_pop.csv' % country))
-    # bts_pop = pop.groupby('CellTowerID')['Pop_2010'].sum().reset_index()
-    # bts_pop = pd.DataFrame(bts_pop.set_index('CellTowerID').reindex(np.array(range(1669))).reset_index())
-    # bts_pop.to_csv('../../../../data/processed/%s/pop/bts_voronoi_pop.csv' % country, index=None)
-
-
-    dist_matrix = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country))
-    pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/bts_voronoi_pop.csv' % country))
-
-    gravity = gravity(adj_matrix_vol, dist_matrix, pop, country)
-
-
-    ''' Save to csv '''
-    # total_activity.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/total_activity.csv' % country,
-    #                       index=None)
-    # deg_vector.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/degree_vector.csv' % country,
-    #                   index=None)
-    # entropy.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/entropy.csv' % country,
-    #                index=None)
-    # med_deg.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/med_degree.csv' % country,
-    #                index=None)
-    # introv.to_csv('../../../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country,
-    #                index=None)
-    # graph.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/graph_metrics.csv' % country,
-    #              index=None)
-    gravity.to_csv('../../../../data/processed/%s/cdr/metrics/gravity.csv' % country,
-                   index=None)
-    # radiation.to_csv('../../../../data/processed/%s/cdr/static_metrics/new/radiation.csv' % country,
-    #                  index=None)
-
-
+    cdr_fundamentals = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']), dfs))
+    cdr_fundamentals.to_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals.csv' % country, index=None)

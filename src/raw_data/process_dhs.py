@@ -52,6 +52,6 @@ if __name__ == '__main__':
     adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/adm_1234.csv' % country))
     all_dhs = pd.DataFrame(all_dhs.merge(adm, on='Adm_4', how='outer'))
 
-    all_dhs.to_csv(source+'/processed/%s/dhs/master_dhs.csv' % country, index=None)
+    all_dhs.to_csv(source+'/processed/%s/dhs/master_dhs_2.csv' % country, index=None)
 
 
