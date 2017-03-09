@@ -249,7 +249,7 @@ if __name__ == '__main__':
     # a.to_csv('../../../../data/processed/%s/distance/dist_matrix_bts.csv' % country, index=None)
 
 
-    # pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/IntersectPop.csv' % country))
+    # pop = pd.DataFrame(pd.read_csv('../../../../data/processed/%s/pop/intersect_pop.csv' % country))
     # bts_pop = pop.groupby('CellTowerID')['Pop_2010'].sum().reset_index()
     # bts_pop = pd.DataFrame(bts_pop.set_index('CellTowerID').reindex(np.array(range(1669))).reset_index())
     # bts_pop.to_csv('../../../../data/processed/%s/pop/bts_voronoi_pop.csv' % country, index=None)

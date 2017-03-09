@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 
-data = pd.DataFrame(pd.read_csv('../../../data/processed/sen/dhs/dhsclusters/DHSData.csv'))
+data = pd.DataFrame(pd.read_csv('../../../data/processed/sen/dhs/dhs_locations/dhs_wealth_poverty.csv'))
 
-data2 = pd.DataFrame(pd.read_csv('../../../data/processed/sen/dhs/dhsclusters/DHS_Adm_1234.csv'))
+data2 = pd.DataFrame(pd.read_csv('../../../data/processed/sen/dhs/dhs_locations/dhs_adm1234.csv'))
 
 
 

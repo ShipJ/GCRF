@@ -28,7 +28,7 @@ def adj_matrix(source, country):
 
     activity_time = np.zeros((num_towers, 6, num_hours))
     for f in os.listdir(source):
-        if f not in ['data.txt', '.DS_Store']:
+        if f not in ['.DS_Store']:
             print "Reading: %s" % f
 
             cdr = pd.read_csv((source+f), usecols=['source', 'target', 'activity', 'duration']).as_matrix()

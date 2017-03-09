@@ -41,7 +41,7 @@ def process_raw(source, target, country):
             save_timestamp(time_stamped, target)
 
 
-def get_data():
+def which_data():
     """
     Ask user for particular data set to process - there are four from the D4D challenge
 
@@ -53,7 +53,7 @@ def get_data():
         return data_set
     else:
         print "Please type an actual data set. \n"
-        return get_data()
+        return which_data()
 
 
 def save_timestamp(time_stamped, target):
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     # Ask user for country code and data set
     country = config.get_country()
     data_source = config.get_dir()
-    data_set = get_data()
+    data_set = which_data()
 
     # Grab data from raw, process, save to interim
     source = data_source+'/raw/%s/CDR%s' % (country, data_set)

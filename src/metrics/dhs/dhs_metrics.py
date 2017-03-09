@@ -39,7 +39,7 @@ def malaria_rate(malaria, country):
     malaria_2['DHSClust'] = pd.unique(malaria.DHSClust)
     malaria_2['Blood_pos'], malaria_2['Blood_neg'], malaria_2['Blood_tot'] = blood_pos, blood_neg, blood_tot
     malaria_2['Rapid_pos'], malaria_2['Rapid_neg'], malaria_2['Rapid_tot'] = rapid_pos, rapid_neg, rapid_tot
-    DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhsclusters/DHS_Adm_1234.csv' % country))
+    DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhs_locations/dhs_adm1234.csv' % country))
     malaria_2['Adm_4'] = DHS_Adm['Adm_4']
     malaria_2 = malaria_2.groupby('Adm_4')['Blood_pos', 'Blood_neg', 'Blood_tot', 'Rapid_pos',
                                            'Rapid_neg', 'Rapid_tot'].sum().reset_index()
@@ -68,7 +68,7 @@ def child_mort_rate(child_mort, country):
     born_died['DHSClust'] = pd.unique(child_mort.DHSClust)
     born_died['TotalBorn'] = born_cluster
     born_died['TotalDied'] = died_cluster
-    DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhsclusters/DHS_Adm_1234.csv' % country))
+    DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhs_locations/dhs_adm1234.csv' % country))
     born_died['Adm_4'] = DHS_Adm['Adm_4']
     born_died_clust = born_died.groupby('Adm_4')['TotalBorn', 'TotalDied'].sum().reset_index()
     born_died_clust['DeathRate'] = np.true_divide(np.array(born_died_clust['TotalDied']),
@@ -96,7 +96,7 @@ def hiv_rate(hiv, country):
         hiv_rate['Neg'] = blood_neg
         hiv_rate['Pos'] = blood_pos
         hiv_rate['Tot'] = blood_tot
-        DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhsclusters/DHS_Adm_1234.csv' % country))
+        DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhs_locations/dhs_adm1234.csv' % country))
         hiv_rate['Adm_4'] = DHS_Adm['Adm_4']
         hiv_rate = hiv_rate.groupby('Adm_4')['Neg', 'Pos', 'Tot'].sum().reset_index()
         hiv_rate['PosRate'] = np.true_divide(np.array(hiv_rate['Pos']), np.array(hiv_rate['Tot']))
@@ -130,7 +130,7 @@ def prevent_disease(preventable_disease, country):
     # hiv_rate['Neg'] = blood_neg
     # hiv_rate['Pos'] = blood_pos
     # hiv_rate['Tot'] = blood_tot
-    # DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhsclusters/DHS_Adm_1234.csv' % country))
+    # DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhs_locations/dhs_adm1234.csv' % country))
     # hiv_rate['Adm_4'] = DHS_Adm['Adm_4']
     # hiv_rate = hiv_rate.groupby('Adm_4')['Neg', 'Pos', 'Tot'].sum().reset_index()
     # hiv_rate['PosRate'] = np.true_divide(np.array(hiv_rate['Pos']), np.array(hiv_rate['Tot']))
@@ -173,7 +173,7 @@ def health_access(data, country):
         health_access['NoProblem'] = no_problem
         health_access['OtherProblem'] = other_problem
         health_access['AllProblems'] = all_problems
-        DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhsclusters/DHS_Adm_1234.csv' % country))
+        DHS_Adm = pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/dhs_locations/dhs_adm1234.csv' % country))
         health_access['Adm_4'] = DHS_Adm['Adm_4']
         health_access = health_access.groupby('Adm_4')['BigProblem', 'NoProblem',
                                                        'OtherProblem', 'AllProblems'].sum().reset_index()

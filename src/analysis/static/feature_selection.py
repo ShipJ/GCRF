@@ -16,13 +16,14 @@ def merge(a, b, adm):
 
 
 def get_country_data(country):
+    source = config.get_dir()
     if country == 'civ':
-        cdr = pd.DataFrame(pd.read_csv('../../../data/final/%s/cdr.csv' % country)).dropna()
-        dhs = pd.DataFrame(pd.read_csv('../../../data/final/%s/dhs.csv' % country)).dropna()
+        cdr = pd.DataFrame(pd.read_csv(source+'/final/%s/cdr.csv' % country)).dropna()
+        dhs = pd.DataFrame(pd.read_csv(source+'/final/%s/dhs.csv' % country)).dropna()
         return cdr, dhs
     elif country == 'sen':
-        cdr = pd.DataFrame(pd.read_csv('../../../data/final/cdr_%s.csv' % country)).dropna()
-        dhs = pd.DataFrame(pd.read_csv('../../../data/final/dhs_%s.csv' % country)).dropna()
+        cdr = pd.DataFrame(pd.read_csv(source+'/final/%s/cdr_pop_1km.csv' % country)).dropna()
+        dhs = pd.DataFrame(pd.read_csv(source+'/final/%s/dhs.csv' % country)).dropna()
         return cdr, dhs
     else:
         country = config.get_country()
@@ -39,7 +40,9 @@ def output_model(country, model, adm, response):
         return merge(set1, set2, adm)
 
     elif model == 'Baseline+CDR':
-        set1_mean = cdr.groupby(adm)['Introversion', 'Pagerank', 'Residuals', 'Log_density_2010', 'Entropy'].mean().reset_index()
+        set1_mean = cdr.groupby(adm)['Introversion', 'Log_density_2010',
+                                     'Entropy', 'EigenvectorCentrality',
+                                     'Residuals', 'Vol_pp'].mean().reset_index()
         set1_sum = cdr.groupby(adm)['Vol'].mean().reset_index()
         set1 = set1_sum.merge(set1_mean, on=adm)
         set2 = dhs.groupby(adm)[response].mean().reset_index()
@@ -47,7 +50,8 @@ def output_model(country, model, adm, response):
 
     elif model == 'CDR':
         set1_sum = cdr.groupby(adm)['Vol'].sum().reset_index()
-        set1_mean = cdr.groupby(adm)['Introversion', 'Pagerank', 'Residuals', 'Entropy'].mean().reset_index()
+        set1_mean = cdr.groupby(adm)['Entropy', 'EigenvectorCentrality',
+                                     'Vol_pp', 'Residuals', 'Introversion'].mean().reset_index()
         set1 = set1_sum.merge(set1_mean, on=adm)
         set2 = dhs.groupby(adm)[response].mean().reset_index()
         return merge(set1, set2, adm)
@@ -60,31 +64,20 @@ def output_model(country, model, adm, response):
     elif model == 'Baseline+Lag':
         spatial = dhs.groupby(adm)['SpatialLag%s' % response].mean().reset_index()
         log_dense = cdr.groupby(adm)['Log_density_2010'].mean().reset_index()
-
         set1 = spatial.merge(log_dense, on=adm)
-
         set2 = dhs.groupby(adm)[response].mean().reset_index()
-
         return merge(set1, set2, adm)
 
     elif model == 'All':
         spatial = dhs.groupby(adm)['SpatialLag%s' % response].mean().reset_index()
         log_dense = cdr.groupby(adm)['Log_density_2010'].mean().reset_index()
-        cdr_mean = cdr.groupby(adm)['Introversion', 'Pagerank', 'Residuals', 'Entropy'].mean().reset_index()
+        cdr_mean = cdr.groupby(adm)['Residuals', 'Introversion',
+                                     'Entropy', 'EigenvectorCentrality',
+                                     'Vol_pp'].mean().reset_index()
         cdr_sum = cdr.groupby(adm)['Vol'].sum().reset_index()
         set1 = cdr_mean.merge(cdr_sum, on=adm).merge(log_dense, on=adm).merge(spatial, on=adm)
-
         set2 = dhs.groupby(adm)[response].mean().reset_index()
-
         return merge(set1, set2, adm)
-
-
-
-
-
-
-
-
 
 
 def forward_selected(data, response):
@@ -113,24 +106,26 @@ def forward_selected(data, response):
 
     formula = "{} ~ {} + 1".format(response, ' + '.join(selected))
     model = smf.ols(formula, data).fit()
-    print model.summary()
     return model
 
 def stepwise_regression(country, response):
+    if country == 'civ':
+        models = ['Baseline', 'Baseline+CDR', 'CDR', 'SpatialLag', 'Baseline+Lag', 'All']
+    elif country == 'sen':
+        models = ['Baseline', 'Baseline+CDR', 'CDR']
+    else:
+        models=[]
 
-    models = ['Baseline', 'Baseline+CDR', 'CDR', 'SpatialLag', 'Baseline+Lag', 'All']
     model_table = PrettyTable()
     model_table.field_names = ['Model'] + ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
 
     for model in models:
-
         adm_levels = ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
         formulas, r2 = [], []
 
         for adm in adm_levels:
-
             data = output_model(country, model, adm, response)
-            print adm
+
             selected = forward_selected(data, response)
             formulas.append(selected.model.formula), r2.append(selected.rsquared_adj)
 
@@ -139,5 +134,8 @@ def stepwise_regression(country, response):
                              'Model: %s\nR^2-adj: %f\n' % (formulas[1], r2[1]),
                              'Model: %s\nR^2-adj: %f\n' % (formulas[2], r2[2]),
                              'Model: %s\nR^2-adj: %f\n' % (formulas[3], r2[3])])
+
     print model_table
+
+
 
