@@ -4,9 +4,9 @@ and converts it into individual time-stamped csv files
 """
 
 import pandas as pd
-import tarfile
-from src.config import config
+import tarfile as tf
 import os
+from src.config import config
 
 
 def process_raw(source, target, country):
@@ -21,7 +21,7 @@ def process_raw(source, target, country):
     :return: None.
     """
     if country == 'civ':
-        file = tarfile.open(source+'.zip', 'r')
+        file = tf.open(source+'.zip', 'r')
         for f in file:
             print "Reading %s..." % f.name
             df = pd.DataFrame.from_csv(file.extractfile(f), sep='\t', header=None).reset_index()
