@@ -2,7 +2,7 @@
 This module computes an adjacency matrix of activity given the
 list of time-stamped files generated from process_raw_cdr.py
 
-It uses COO (coordinate format) matrix operations/functionality
+It uses COO (coordinate format) matrix operations/functions
 which is considerably more efficient than simple matrix ops
 
 The 'save' functions are commented out to prevent overriding
