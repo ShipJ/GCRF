@@ -61,7 +61,7 @@ if __name__ == '__main__':
     master = merge_cdr(cdr_metrics, country)
 
     pop_adm_4 = config.get_pop(country, 4)
-    pop_intersect = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/IntersectPop.csv' % country))
+    pop_intersect = pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/intersect_pop.csv' % country))
     low_pop = pop_intersect[pop_intersect['Pop_2010'] < 1]['CellTowerID']
 
     for i in low_pop:
