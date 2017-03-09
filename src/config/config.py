@@ -5,6 +5,23 @@ as providing constant values for different countries - i.e. data that will not c
 
 import numpy as np
 import pandas as pd
+import os
+import sys
+
+
+def get_dir():
+    """
+    This simple function returns the path to the data directory, which sits
+    at the same level as the src directory. This allows access to data files
+    using the same commands within different subdirectories.
+    :return:
+    """
+    root_path = os.path.dirname(os.path.abspath(__file__+'../../../'))
+    data_path = root_path+'/data'
+    if data_path.endswith('/data'):
+        return data_path
+    else:
+        print 'Path to data source not found. Check documentation for correct structure. \n'
 
 
 def get_country():
@@ -13,6 +30,7 @@ def get_country():
 
     :return: str - country for which there is data.
     """
+
     print "Process data for which country? ['sen': Senegal, 'civ': Ivory Coast]: "
     input_country = raw_input()
     if input_country == 'sen':
@@ -20,7 +38,7 @@ def get_country():
     elif input_country == 'civ':
         country = 'civ'
     else:
-        print "Please type the country abbreviation (lower case): "
+        print "Please type the country abbreviation (lower case): \n"
         return get_country()
     return country
 
@@ -41,7 +59,7 @@ def get_constants(country):
                      'Adm_1': 14, 'Adm_2': 45, 'Adm_3': 122, 'Adm_4': 431}
         return constants
     else:
-        print "Please type the country abbreviation (lower case): "
+        print "Please type the country abbreviation (lower case): \n"
         return get_constants(country)
 
 
@@ -52,71 +70,86 @@ def get_adj_matrix(country):
         :param country: str - country code.
         :return:
         """
+    source = get_dir()
     if country in ['civ', 'sen']:
-        return np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/'
-                             'adj_matrix_vol.csv' % country, delimiter=','),\
-               np.genfromtxt('../../../../data/processed/%s/cdr/staticmetrics/'
-                             'adj_matrix_dur.csv' % country, delimiter=',')
+        adj_vol = np.genfromtxt(source + '/processed/%s/cdr/staticmetrics/adj_matrix_vol.csv' % country, delimiter=',')
+        adj_dur = np.genfromtxt(source + '/processed/%s/cdr/staticmetrics/adj_matrix_dur.csv' % country, delimiter=',')
+        return adj_vol, adj_dur
     else:
-        print "Please type the country abbreviation (lower case): "
+        print "Please type a correct country abbreviation (lower case): \n"
         return get_constants(country)
 
 
-def get_cdr_features(country):
+def get_pop(country, *args):
     """
-    Return the cdr features of the given country.
-    :param country: country code.
-    :return: dataframe containing the respective data.
-    """
-    if country in ['civ', 'sen']:
-        return pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
-                                        'new/total_activity.csv' % country)),\
-               pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/'
-                                        'new/degree_vector.csv' % country)),\
-               # pd.DataFrame(pd.read_csv('../../../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv'))
-
-def get_pop(country, adm):
-    """
-
+    Returns the population of the intersections between adminstrative regions and voronoi regions of cell towers. They
+    are labelled and so it is possible to calculate the proportion of cell tower features within an area that belong
+    to a particular administrative region, using data extracted from raster files using QGIS.  The user manual describes
+    this in more detail, but essentially the user can provide an argument asking to aggregate the population at a
+    particular administrative level, or not.
     :param country:
     :param adm:
     :return:
     """
+    source = get_dir()
     if country in ['civ', 'sen']:
-        return pd.DataFrame(pd.read_csv('../../data/processed/%s/pop/pop_adm_%d_2010.csv' % (country, adm)))
+        data = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/intersect_pop.csv' % country))
+        if len(args) > 0:
+            if args[0] in [1, 2, 3, 4]:
+                pop = data.groupby('Adm_%s'%args[0])['Pop_2010'].sum().reset_index()
+                return pop
+            else:
+                print 'Sorry, it is not possible to aggregate population at that level.\n'
+        else:
+            return data
+    else:
+        print 'Did not recognise country code, please try again: \n'
+        return get_country()
 
 
 def get_cdr_metrics(country):
-    activity = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/total_activity.csv' % country))
-    entropy = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/entropy.csv' % country))
-    med_degree = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/med_degree.csv' % country))
-    graph = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/graph_metrics.csv' % country))
-    introversion = pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/staticmetrics/new/introversion.csv' % country))
-    return [activity, entropy, med_degree, graph, introversion]
+    source = get_dir()
+    activity = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/total_activity.csv' % country))
+    entropy = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/entropy.csv' % country))
+    med_degree = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/med_degree.csv' % country))
+    graph = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/graph_metrics.csv' % country))
+    introversion = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/introversion.csv' % country))
+    residuals = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/staticmetrics/residuals.csv' % country))
+    # Insert some kind of merge function to return one dataframe, push into the func below
+    return activity, entropy, med_degree, graph, introversion, residuals
 
 
 def get_dhs(country):
-    malaria = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/malaria.csv' % country))
-    child_mort = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/child_mort.csv' % country))
-    women_health_access = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/women_health_access.csv' % country))
-    preventable_disease = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/preventable_disease.csv' % country))
+    """
+
+    :param country:
+    :return:
+    """
+    source = get_dir()
+    malaria = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/malaria.csv' % country))
+    child_mort = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/child_mort.csv' % country))
+    women_health_access = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/women_health_access.csv' % country))
+    preventable_disease = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/preventable_disease.csv' % country))
     if country == 'civ':
-        hiv = pd.DataFrame(pd.read_csv('../../data/interim/%s/dhs/hiv.csv' % country))
+        hiv = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/hiv.csv' % country))
         return [malaria, child_mort, women_health_access, hiv, preventable_disease]
     else:
         return [malaria, child_mort, women_health_access, preventable_disease]
 
 
 def get_master_cdr(country):
-    return pd.DataFrame(pd.read_csv('../../data/processed/%s/cdr/master_cdr.csv' % country))
+    source=get_dir()
+    return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/master_cdr.csv' % country))
 
 
 def get_master_dhs(country):
-    return pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/master_dhs.csv' % country))
+    source=get_dir()
+    return pd.DataFrame(pd.read_csv(source+'/processed/%s/dhs/master_dhs.csv' % country))
 
 
 def get_master_other(country):
-    return pd.DataFrame(pd.read_csv('../../data/processed/%s/dhs/wealth/DHSData.csv' % country,
+    source=get_dir()
+    return pd.DataFrame(pd.read_csv(source+'processed/%s/dhs/wealth/dhs_wealth_poverty.csv' % country,
                                     usecols=['UrbRur', 'Poverty', 'Z_Med', 'Capital', 'Pop_1km',
                                              'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
 
