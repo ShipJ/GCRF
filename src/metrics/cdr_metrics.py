@@ -151,6 +151,37 @@ def graph_metrics(adj_matrix):
     return graph
 
 
+def feature_per_adm(master, pop_intersect):
+    prop_vol = []
+    for i in pd.unique(pop_intersect['Adm_4']):
+        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
+
+        vol = 0
+        for j in adm_i['CellTowerID']:
+            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
+            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
+            cell_tower_vol = np.sum(master[master['CellTowerID'] == j]['Vol'])
+            vol += prop_pop/float(cell_tower_pop)*cell_tower_vol
+        prop_vol.append(vol)
+    return prop_vol
+
+
+def all_feature_per_adm(master, pop_intersect):
+    prop_vol = []
+    for i in pd.unique(pop_intersect['Adm_4']):
+        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
+
+        vol = np.zeros(14)
+        for j in adm_i['CellTowerID']:
+            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
+            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
+            cell_tower_all = np.sum(master[master['CellTowerID'] == j])
+            vol += prop_pop/float(cell_tower_pop)*np.array(cell_tower_all[1:15])
+        vol[8:] = vol[8:] / np.array(len(adm_i))
+        prop_vol.append(vol)
+    return prop_vol
+
+
 def g_residuals(adj_matrix, dist_matrix, pop, bts_adm, num_towers):
     """
     Computes the ..
@@ -228,23 +259,45 @@ if __name__ == '__main__':
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
 
-    adj_matrix_vol = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country,
-                                   delimiter=',')
-    adj_matrix_dur = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
-                                   delimiter=',')
+    # adj_matrix_vol = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country,
+    #                                delimiter=',')
+    # adj_matrix_dur = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
+    #                                delimiter=',')
+    #
+    # total_activity = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
+    # deg_vector = degree_vector(num_towers, adj_matrix_vol)
+    # entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
+    # med_deg = med_degree(num_towers, adj_matrix_vol)
+    # graph = graph_metrics(adj_matrix_vol)
+    # introv = introversion(num_towers, adj_matrix_vol)
+    # dist_matrix = pd.DataFrame(pd.read_csv(source+'/processed/%s/distance/dist_matrix_bts.csv' % country))
+    # pop = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
+    # bts_adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
+    # g_residuals = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
+    #
+    # dfs = [total_activity, entropy, med_deg, graph, introv, g_residuals]
+    #
+    # cdr_fundamentals = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']), dfs))
+    # cdr_fundamentals.to_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals.csv' % country, index=None)
 
-    total_activity = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
-    deg_vector = degree_vector(num_towers, adj_matrix_vol)
-    entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
-    med_deg = med_degree(num_towers, adj_matrix_vol)
-    graph = graph_metrics(adj_matrix_vol)
-    introv = introversion(num_towers, adj_matrix_vol)
-    dist_matrix = pd.DataFrame(pd.read_csv(source+'/processed/%s/distance/dist_matrix_bts.csv' % country))
-    pop = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
-    bts_adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
-    g_residuals = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
+    cdr_fundamentals = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals.csv' % country))
 
-    dfs = [total_activity, entropy, med_deg, graph, introv, g_residuals]
 
-    cdr_fundamentals = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']), dfs))
-    cdr_fundamentals.to_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals.csv' % country, index=None)
+    pop_adm_4 = config.get_pop(country, 4)
+    pop_intersect = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/intersect_pop.csv' % country))
+    low_pop = pop_intersect[pop_intersect['Pop_2010'] < 1]['CellTowerID']
+    for i in low_pop:
+        pop_intersect = pop_intersect[pop_intersect['CellTowerID'] != i]
+
+    adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/adm_1234.csv' % country))
+    all_features_adm_4 = pd.DataFrame(all_feature_per_adm(cdr_fundamentals,
+                                                          pop_intersect),
+                                      columns=cdr_fundamentals.columns[1:15])
+    master = pd.DataFrame()
+    master = pd.DataFrame(pd.concat([master, adm, all_features_adm_4], axis=1))
+
+    print master
+
+    # master.to_csv('../../data/processed/%s/cdr/master_cdr.csv' % country, index=None)
+
+
