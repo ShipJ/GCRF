@@ -20,6 +20,7 @@ def activity(num_towers, adj_matrix_v, adj_matrix_d):
     :param adj_matrix_dur:
     :return: dataframe - containing total activity of each cell tower
     """
+    print 'Computing activity per bts...'
     volume_total, volume_in, volume_out, volume_self = [], [], [], []
     duration_total, duration_in, duration_out, duration_self = [], [], [], []
     for i in range(num_towers):
@@ -48,7 +49,7 @@ def degree_vector(num_towers, adj_matrix):
     :param adj_matrix:
     :return: dataframe - contains total, in and out degree of each cell tower.
     """
-
+    print 'Computing the degree vector of each bts...'
     total_degree, in_degree, out_degree = [], [], []
     for i in range(num_towers):
         in_deg = np.count_nonzero(adj_matrix[:, i])
@@ -70,9 +71,10 @@ def entropy(activity, adj_matrix, deg_vector):
     :param adj_matrix:
     :return:
     """
+    print 'Computing the entropy of each bts...'
+
     deg_vector = deg_vector.as_matrix()
     activity = activity.as_matrix()
-
     q_matrix = adj_matrix / activity[:, 1, None]
     where_nan = np.where(np.isnan(q_matrix))
     q_matrix[where_nan] = 0
@@ -98,6 +100,7 @@ def med_degree(num_towers, adj_matrix):
     :param adj_matrix:
     :return:
     """
+    print 'Computing the median degree of each bts...'
     adj = adj_matrix.copy()
 
     for i in range(num_towers):
@@ -123,6 +126,7 @@ def introversion(num_towers, adj_matrix):
     :param adj_matrix:
     :return:
     """
+    print 'Computing the introversion of each bts...'
     introv = np.zeros(num_towers)
     for i in range(num_towers):
         out = np.sum(np.delete(adj_matrix[i, :], i))
@@ -139,6 +143,7 @@ def graph_metrics(adj_matrix):
     :param adj_matrix:
     :return:
     """
+    print 'Computing various graph metrics of each bts in the network...'
     G = nx.from_numpy_matrix(adj_matrix)
     pagerank = nx.pagerank_numpy(G, weight='weight')
     evc = nx.eigenvector_centrality_numpy(G, weight='weight')
@@ -151,37 +156,6 @@ def graph_metrics(adj_matrix):
     return graph
 
 
-def feature_per_adm(master, pop_intersect):
-    prop_vol = []
-    for i in pd.unique(pop_intersect['Adm_4']):
-        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
-
-        vol = 0
-        for j in adm_i['CellTowerID']:
-            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
-            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
-            cell_tower_vol = np.sum(master[master['CellTowerID'] == j]['Vol'])
-            vol += prop_pop/float(cell_tower_pop)*cell_tower_vol
-        prop_vol.append(vol)
-    return prop_vol
-
-
-def all_feature_per_adm(master, pop_intersect):
-    prop_vol = []
-    for i in pd.unique(pop_intersect['Adm_4']):
-        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
-
-        vol = np.zeros(14)
-        for j in adm_i['CellTowerID']:
-            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
-            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
-            cell_tower_all = np.sum(master[master['CellTowerID'] == j])
-            vol += prop_pop/float(cell_tower_pop)*np.array(cell_tower_all[1:15])
-        vol[8:] = vol[8:] / np.array(len(adm_i))
-        prop_vol.append(vol)
-    return prop_vol
-
-
 def g_residuals(adj_matrix, dist_matrix, pop, bts_adm, num_towers):
     """
     Computes the ..
@@ -192,7 +166,7 @@ def g_residuals(adj_matrix, dist_matrix, pop, bts_adm, num_towers):
     :param bts_adm:
     :return:
     """
-
+    print 'Computing the gravity residual value of each bts...'
     dist_matrix = dist_matrix.sort_values(by=['Source', 'Target']).reset_index(drop=True)
 
     pop_ab = np.array(pop['Pop_2010'])
@@ -244,60 +218,81 @@ def g_residuals(adj_matrix, dist_matrix, pop, bts_adm, num_towers):
 
     g_resids = g_resids.merge(bts_adm[['CellTowerID', 'Adm_1', 'Adm_2',
                                        'Adm_3', 'Adm_4']], on='CellTowerID', how='outer')
-
     full = pd.DataFrame()
     full['CellTowerID'] = range(num_towers)
-
     g_resids = pd.DataFrame(g_resids.merge(full, on='CellTowerID', how='outer'))
     return g_resids
 
-
-if __name__ == '__main__':
-    country = config.get_country()
-    source = config.get_dir()
-
-    constants = config.get_constants(country)
-    num_towers = constants['num_towers']
-
-    # adj_matrix_vol = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country,
-    #                                delimiter=',')
-    # adj_matrix_dur = np.genfromtxt(source+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
-    #                                delimiter=',')
-    #
-    # total_activity = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
-    # deg_vector = degree_vector(num_towers, adj_matrix_vol)
-    # entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
-    # med_deg = med_degree(num_towers, adj_matrix_vol)
-    # graph = graph_metrics(adj_matrix_vol)
-    # introv = introversion(num_towers, adj_matrix_vol)
-    # dist_matrix = pd.DataFrame(pd.read_csv(source+'/processed/%s/distance/dist_matrix_bts.csv' % country))
-    # pop = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
-    # bts_adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
-    # g_residuals = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
-    #
-    # dfs = [total_activity, entropy, med_deg, graph, introv, g_residuals]
-    #
-    # cdr_fundamentals = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']), dfs))
-    # cdr_fundamentals.to_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals.csv' % country, index=None)
-
-    cdr_fundamentals = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals.csv' % country))
-
-
-    pop_adm_4 = config.get_pop(country, 4)
-    pop_intersect = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/intersect_pop.csv' % country))
+def metric_per_adm(cdr_bts, country, PATH):
+    # Population within the bts-voronoi and adm-region intersections
+    pop_intersect = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/intersect_pop.csv' % country))
+    # Do not include areas for which there are no people
     low_pop = pop_intersect[pop_intersect['Pop_2010'] < 1]['CellTowerID']
     for i in low_pop:
         pop_intersect = pop_intersect[pop_intersect['CellTowerID'] != i]
+    prop_vol = []
+    for i in pd.unique(pop_intersect['Adm_4']):
+        adm_i = pop_intersect[pop_intersect['Adm_4'] == i]
+        vol = np.zeros(15)
+        count = 0
+        for j in adm_i['CellTowerID']:
+            cell_tower_pop = np.sum(pop_intersect[pop_intersect['CellTowerID'] == j]['Pop_2010'])
+            prop_pop = np.sum(adm_i[adm_i['CellTowerID'] == j]['Pop_2010'])
+            cell_tower_all = np.sum(cdr_bts[cdr_bts['CellTowerID'] == j])
+            vol[:14] += prop_pop/float(cell_tower_pop)*np.array(cell_tower_all[1:15])
+            grav = cell_tower_all['G_residuals']
+            if not np.isnan(grav):
+                vol[14] += prop_pop/float(cell_tower_pop)*np.array(grav)
+                count +=1
 
-    adm = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/bts/adm_1234.csv' % country))
-    all_features_adm_4 = pd.DataFrame(all_feature_per_adm(cdr_fundamentals,
-                                                          pop_intersect),
-                                      columns=cdr_fundamentals.columns[1:15])
-    master = pd.DataFrame()
-    master = pd.DataFrame(pd.concat([master, adm, all_features_adm_4], axis=1))
+        vol[8:14] = vol[8:14] / np.array(len(adm_i))
+        vol[14] = vol[14] / np.array(count)
+        prop_vol.append(vol)
+    adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/bts/adm_1234.csv' % country))
 
-    print master
+    cdr_fundamentals_adm = pd.DataFrame(prop_vol,
+                                      columns=[metric for metric in cdr_bts.columns if
+                                               metric not in ['CellTowerID', 'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']])
+    return pd.DataFrame(pd.concat([adm, cdr_fundamentals_adm], axis=1))
 
-    # master.to_csv('../../data/processed/%s/cdr/master_cdr.csv' % country, index=None)
+
+if __name__ == '__main__':
+    # path to data store
+    PATH = config.get_dir()
+
+    # ask user for country, retrieve country constants
+    country = config.get_country()
+    constants = config.get_constants(country)
+    num_towers = constants['num_towers']
+
+    # retrieve adjacency matrices for each country
+    adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country,
+                                   delimiter=',')
+    adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
+                                   delimiter=',')
+    # distance matrix between bts's
+    dist_matrix = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance/dist_matrix_bts.csv' % country))
+    # population per bts voronoi region (to calculate proportions)
+    pop = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/pop/bts_voronoi_pop.csv' % country))
+    # reference to in which adm 1,2,3,4 each bts belongs
+    bts_adm = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
+
+    # Individual metrics
+    total_activity = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
+    deg_vector = degree_vector(num_towers, adj_matrix_vol)
+    entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
+    med_deg = med_degree(num_towers, adj_matrix_vol)
+    graph = graph_metrics(adj_matrix_vol)
+    introv = introversion(num_towers, adj_matrix_vol)
+    g_residuals = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
+
+    # Merges each individual metric into a single dataframe, preserving missing adm's as NaN's
+    cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
+                                               [total_activity, entropy, med_deg, graph, introv, g_residuals]))
+    cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts.csv' % country, index=None)
+
+    # Takes the cdr metrics dataframe, and computes an adm-level metric proportional to the population
+    cdr_fundamentals_adm = metric_per_adm(cdr_fundamentals_bts, country, PATH)
+    cdr_fundamentals_adm.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_adm.csv' % country, index=None)
 
 
