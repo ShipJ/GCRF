@@ -127,13 +127,14 @@ def get_raw_dhs(country):
     source = get_dir()
     malaria = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/malaria.csv' % country))
     child_mort = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/child_mort.csv' % country))
-    women_health_access = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/women_health_access.csv' % country))
-    preventable_disease = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/preventable_disease.csv' % country))
+
+    # preventable_disease = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/preventable_disease.csv' % country))
     if country == 'civ':
         hiv = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/hiv.csv' % country))
-        return [malaria, child_mort, women_health_access, hiv, preventable_disease]
+        women_health_access = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/women_health_access.csv' % country))
+        return [malaria, hiv, child_mort, women_health_access]
     else:
-        return [malaria, child_mort, women_health_access, preventable_disease]
+        return [malaria, child_mort]
 
 
 def get_master_cdr(country):
