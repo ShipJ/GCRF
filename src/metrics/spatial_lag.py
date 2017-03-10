@@ -4,7 +4,7 @@ import sys
 
 dhs = pd.DataFrame(pd.read_csv('../../../data/final/civ/dhs.csv'))
 
-dist = pd.DataFrame(pd.read_csv('../../../data/processed/civ/distance/dist_matrix_adm4.csv'))
+dist = pd.DataFrame(pd.read_csv('../../../data/processed/civ/distance_area/dist_matrix_adm4.csv'))
 
 
 spatial_lag = []

@@ -269,8 +269,8 @@ if __name__ == '__main__':
                                    delimiter=',')
     adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
                                    delimiter=',')
-    # distance matrix between bts's
-    dist_matrix = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance/dist_matrix_bts.csv' % country))
+    # distance_area matrix between bts's
+    dist_matrix = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance_area/dist_matrix_bts.csv' % country))
     # population per bts voronoi region (to calculate proportions)
     pop = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/pop/bts_voronoi_pop.csv' % country))
     # reference to in which adm 1,2,3,4 each bts belongs
