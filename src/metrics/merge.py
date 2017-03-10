@@ -11,4 +11,4 @@ if __name__ == '__main__':
     # other = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/other_fundamentals_adm.csv' % country))
 
     master = pd.DataFrame(cdr.merge(dhs, on=['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4'], how='outer'))
-    master.to_csv(PATH+'/final/%s/master_1.0.csv', index=None)
+    master.to_csv(PATH+'/final/%s/master_1.0.csv' % country, index=None)
