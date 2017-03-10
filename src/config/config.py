@@ -139,12 +139,12 @@ def get_raw_dhs(country):
 
 def get_master_cdr(country):
     source=get_dir()
-    return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/master_cdr.csv' % country))
+    return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/cdr_fundamentals.csv' % country))
 
 
 def get_master_dhs(country):
     source=get_dir()
-    return pd.DataFrame(pd.read_csv(source+'/processed/%s/dhs/master_dhs.csv' % country))
+    return pd.DataFrame(pd.read_csv(source+'/processed/%s/dhs/dhs_fundamentals.csv' % country))
 
 
 def get_master_other(country):
