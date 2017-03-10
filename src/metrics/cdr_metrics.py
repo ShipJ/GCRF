@@ -8,7 +8,6 @@ import numpy as np
 import networkx as nx
 from sklearn.linear_model import LinearRegression
 from src.config import config
-import sys
 
 
 def activity(num_towers, adj_matrix_v, adj_matrix_d):
