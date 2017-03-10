@@ -51,10 +51,10 @@ def adj_matrix(source, country):
 
 if __name__ == '__main__':
     country = config.get_country()
-    data_source = config.get_dir()
+    PATH = config.get_dir()
 
-    source = data_source+'/interim/%s/cdr/timestamp/' % country
-    target = data_source+'/processed/%s/cdr/adjacency' % country
+    source = PATH+'/interim/%s/cdr/timestamp/' % country
+    target = PATH+'/processed/%s/cdr/adjacency' % country
 
     try:
         vol, dur = adj_matrix(source, country)
