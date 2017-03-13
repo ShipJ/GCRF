@@ -39,7 +39,7 @@ if __name__ == '__main__':
         spatial = pd.DataFrame(np.transpose(spatial_lag), columns=['BloodPosRate', 'RapidPosRate', 'DeathRate',
                                                                    'PosRate', 'DifficultyScore'])
         spatial = pd.DataFrame(pd.concat([adm, spatial], axis=1))
-        spatial.to_csv(PATH + '/final/%s/spatial_lag.csv' % country, index=None)
+        spatial.to_csv(PATH + '/processed/%s/cdr/metrics/spatial_lag.csv' % country, index=None)
 
     elif country == 'sen':
         dhs = pd.DataFrame(
@@ -70,7 +70,7 @@ if __name__ == '__main__':
             spatial_lag.append(spatial_score)
         spatial = pd.DataFrame(np.transpose(spatial_lag), columns=['BloodPosRate', 'RapidPosRate', 'DeathRate'])
         spatial = pd.DataFrame(pd.concat([adm, spatial], axis=1))
-        spatial.to_csv(PATH+'/final/%s/spatial_lag.csv' % country, index=None)
+        spatial.to_csv(PATH+'/final/%s/cdr/metrics/spatial_lag.csv' % country, index=None)
 
 
 

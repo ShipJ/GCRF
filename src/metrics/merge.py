@@ -10,5 +10,9 @@ if __name__ == '__main__':
     spatial_lag = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/spatial_lag.csv' % country))
     # other = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/other_fundamentals_adm.csv' % country))
 
-    master = pd.DataFrame(cdr.merge(dhs, on=['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4'], how='outer'))
-    master.to_csv(PATH+'/final/%s/master_1.0.csv' % country, index=None)
+    master = pd.DataFrame(cdr.merge(dhs,
+                                    on=['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4'],
+                                    how='outer')).merge(spatial_lag,
+                                                        on=['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4'],
+                                                        how='outer')
+    master.to_csv(PATH+'/final/%s/master_2.0.csv' % country, index=None)
