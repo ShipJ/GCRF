@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     cdr = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/metrics/cdr_derived_adm.csv' % country))
     dhs = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/dhs_fundamentals_adm.csv' % country))
-    spatial_lag = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/spatial_lag.csv' % country))
+    spatial_lag = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/metrics/spatial_lag.csv' % country))
     # other = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/other_fundamentals_adm.csv' % country))
 
     master = pd.DataFrame(cdr.merge(dhs,

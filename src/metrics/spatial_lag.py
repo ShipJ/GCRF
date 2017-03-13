@@ -36,8 +36,8 @@ if __name__ == '__main__':
                                 np.array(response_i[response])[0])
                 spatial_score.append(sum_lag)
             spatial_lag.append(spatial_score)
-        spatial = pd.DataFrame(np.transpose(spatial_lag), columns=['BloodPosRate', 'RapidPosRate', 'DeathRate',
-                                                                   'PosRate', 'DifficultyScore'])
+        spatial = pd.DataFrame(np.transpose(spatial_lag), columns=['BloodPosRateSL', 'RapidPosRateSL', 'DeathRateSL',
+                                                                   'PosRateSL', 'DifficultyScoreSL'])
         spatial = pd.DataFrame(pd.concat([adm, spatial], axis=1))
         spatial.to_csv(PATH + '/processed/%s/cdr/metrics/spatial_lag.csv' % country, index=None)
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
                                 np.array(response_i[response])[0])
                 spatial_score.append(sum_lag)
             spatial_lag.append(spatial_score)
-        spatial = pd.DataFrame(np.transpose(spatial_lag), columns=['BloodPosRate', 'RapidPosRate', 'DeathRate'])
+        spatial = pd.DataFrame(np.transpose(spatial_lag), columns=['BloodPosRateSL', 'RapidPosRateSL', 'DeathRateSL'])
         spatial = pd.DataFrame(pd.concat([adm, spatial], axis=1))
         spatial.to_csv(PATH+'/final/%s/cdr/metrics/spatial_lag.csv' % country, index=None)
 
