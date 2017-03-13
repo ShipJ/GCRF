@@ -28,29 +28,26 @@ def z_score(df):
     return z_scores
 
 source = config.get_dir()
-data = pd.DataFrame(pd.read_csv(source+'/final/civ/master.csv')).dropna()
-data['log_vol'] = np.log(data['Vol'])
-data['vol_pp'] = data['Vol']/data['Pop_2010']
-data['log_pop_dense'] = np.log(data['Pop_2010']/data['Area_km2'])
+data = pd.DataFrame(pd.read_csv(source+'/final/civ/master_1.0.csv')).dropna()
 
-for i in ['Adm_4']:
 
-    dhs_i = data.groupby(i)['BloodPosRate', 'RapidPosRate', 'HIVPosRate',
-                            'DeathRate', 'HealthAccessDifficulty', 'Z_Med'].mean().reset_index()
+for i in ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']:
+
+    dhs_i = data.groupby(i)['BloodPosRate', 'RapidPosRate', 'PosRate',
+                            'DeathRate', 'DifficultyScore'].mean().reset_index()
     cdr_sum_i = data.groupby(i)['Vol', 'Vol_in', 'Vol_out', 'Dur', 'Dur_in', 'Dur_out'].sum().reset_index()
     cdr_mean_i = data.groupby(i)['Entropy', 'Introversion', 'Med_degree', 'Degree_centrality',
-                               'EigenvectorCentrality','Residuals', 'log_vol',
-                                 'vol_pp', 'log_pop_dense'].mean().reset_index()
+                               'EigenvectorCentrality', 'G_residuals', 'Log_vol',
+                                'Vol_pp', 'Log_pop_density'].mean().reset_index()
     cdr_i = cdr_sum_i.merge(cdr_mean_i, on=i)
 
-    for j in ['BloodPosRate', 'RapidPosRate', 'HIVPosRate', 'DeathRate', 'HealthAccessDifficulty', 'Z_Med']:
+    for j in ['BloodPosRate', 'RapidPosRate', 'PosRate', 'DeathRate', 'HealthAccessDifficulty']:
 
         for k in ['Vol', 'Vol_in', 'Vol_out', 'Entropy', 'Introversion', 'Med_degree', 'Degree_centrality',
-                  'EigenvectorCentrality','Residuals', 'log_vol', 'vol_pp', 'log_pop_dense']:
+                  'EigenvectorCentrality','Residuals', 'Log_vol', 'Vol_pp', 'Log_pop_density']:
+
             a = cdr_i.groupby(i)[k].sum().reset_index()
             b = a.merge(dhs_i.groupby(i)[j].sum().reset_index(), on=i).dropna().as_matrix()
-
-            print b
 
             plt.scatter(np.log(b[:, 1]), b[:, 2]+1)
             print pearsonr(np.log(b[:, 1]+1), b[:, 2]+1)
