@@ -154,3 +154,16 @@ def get_master_other(country):
                                              'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
 
 
+def get_headers(country, *args):
+    if args[0] == 'adm':
+        return ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
+    elif args[0] == 'cdr':
+        return ['Vol', 'Vol_in', 'Vol_out', 'Dur', 'Dur_in', 'Dur_out', 'Entropy', 'Introversion', 'Med_degree',
+                'Degree_centrality', 'EigenvectorCentrality', 'G_residuals', 'Log_vol', 'Vol_pp', 'Log_pop_density']
+    elif args[0] == 'dhs':
+        if country == 'civ':
+            return ['BloodPosRate', 'RapidPosRate', 'PosRate', 'DeathRate', 'DifficultyScore']
+        elif country == 'sen':
+            return ['BloodPosRate', 'RapidPosRate', 'DeathRate']
+
+
