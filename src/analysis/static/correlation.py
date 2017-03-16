@@ -5,43 +5,87 @@ no sparsification applied either - i.e. using all data, all links, at all times.
 
 import pandas as pd
 import numpy as np
-from scipy.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr, norm
 import matplotlib.pyplot as plt
 from src.config import config
+import sys
 
 
 def outliers(df):
-    outliers = np.where(df < 1.5*np.mean(df))
+    outliers = np.where(df < 3.29 *np.mean(df))
     return outliers
 
 def z_score(df):
-    z_scores = np.array((df-np.mean(df))/np.std(df))
-    return z_scores
+    return np.array((df-np.mean(df))/np.std(df))
+
+def corr_pvalue_conf(df):
+
+    numeric_df = df.dropna()._get_numeric_data()
+    cols = numeric_df.columns
+    mat = numeric_df.values
+    arr = np.zeros((len(cols),len(cols)), dtype=object)
+
+    for xi, x in enumerate(mat.T):
+        for yi, y in enumerate(mat.T[xi:]):
+            pmcc_pval = np.array(map(lambda _: round(_,3), pearsonr(x,y)))
+            z = np.arctanh(pmcc_pval[0])
+            sigma = (1 / ((len(numeric_df.index) - 3) ** 0.5))
+            cint = z + np.array([-1, 1]) * sigma * norm.ppf((1 + 0.95) / 2)
+            cint = [round(i, 3) for i in cint]
+            pmcc_pval_conf = np.concatenate([pmcc_pval, cint])
+            arr[xi, yi+xi] = pmcc_pval_conf
+            arr[yi+xi, xi] = arr[xi, yi+xi]
+    return pd.DataFrame(arr, index=cols, columns=cols)
+
+def aggregate_sum(data, features, adm):
+    return data.groupby(adm)[features].sum().reset_index()
+
+def aggregate_mean(data, features, adm):
+    return data.groupby(adm)[features].mean().reset_index()
 
 if __name__ == '__main__':
-    source = config.get_dir()
+    PATH = config.get_dir()
     country = config.get_country()
     adms = config.get_headers(country, 'adm')
     cdr_features = config.get_headers(country, 'cdr')
     dhs_features = config.get_headers(country, 'dhs')
+    group_features = config.get_headers(country, 'group')
 
-    data = pd.DataFrame(pd.read_csv(source+'/final/%s/master_2.0.csv' % country))
+    # Grab data
+    data = pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_3.0.csv' % country))
 
-    for i in adms:
+    # For each adm
+    for adm in adms:
 
-        dhs_i = data.groupby(i)[dhs_features].mean().reset_index()
-        cdr_sum_i = data.groupby(i)[cdr_features[:6]].sum().reset_index()
-        cdr_mean_i = data.groupby(i)[cdr_features[6:]].mean().reset_index()
-        cdr_i = cdr_sum_i.merge(cdr_mean_i, on=i)
+        # Aggregate at that level
+        dhs_adm = aggregate_mean(data, adm, dhs_features)
+        cdr_sum_adm = aggregate_sum(data, cdr_features[:6], adm)
+        cdr_mean_adm = aggregate_mean(data, cdr_features[6:], adm)
+        cdr_adm = cdr_sum_adm.merge(cdr_mean_adm, on=adm)
 
+        # For grouping variables at a later stage
+        group_adm =
+
+        print cdr_adm
+        print dhs_adm
+
+
+        sys.exit()
+
+        # For all DHS metrics
         for j in dhs_features:
-            dvs = dhs_i[[i, j]]
+            dvs = dhs_adm[[adm, j]]
 
+            # For all CDR metrics
             for k in cdr_features:
-                ivs = cdr_i[[i, k]]
-                merged = dvs.merge(ivs, on=i, how='outer').dropna()
 
-                print 'No outliers, no transformation ', i, j, k
+                # Grab independent variable (CDR)
+                ivs = cdr_adm[[adm, k]]
+                # Merge with dependent variable, remove non-existent data
+                merged = dvs.merge(ivs, on=adm, how='outer').dropna()
+
+                # Correlation 1
+                print 'No outliers, no transformation ', adm, j, k
                 iv1 = np.abs(merged[k])
                 dv1 = np.abs(merged[j])
                 iv1 = z_score(iv1)
@@ -50,7 +94,8 @@ if __name__ == '__main__':
                 plt.scatter(iv1, dv1)
                 plt.show()
 
-                print 'Outliers, no transformation ', i, j, k
+                # Correlation 2
+                print 'Outliers, no transformation ', adm, j, k
                 iv2 = np.abs(np.array(merged[k]))
                 dv2 = np.abs(np.array(merged[j]))
                 non_outliers_iv2 = outliers(iv2)
@@ -59,15 +104,13 @@ if __name__ == '__main__':
                 non_outliers_dv2 = outliers(dv2)
                 iv2 = iv2[non_outliers_dv2]
                 dv2 = dv2[non_outliers_dv2]
-
                 iv2 = z_score(iv2)
                 dv2 = z_score(dv2)
-
-                print pearsonr(iv2, dv2)
                 plt.scatter(iv2, dv2)
                 plt.show()
 
-                print 'No outliers, log-log-transformation ', i, j, k
+                # Correlation 3
+                print 'No outliers, log-log-transformation ', adm, j, k
                 iv3 = np.log(np.abs(merged[k]))
                 dv3 = np.log(np.abs(merged[j]))
                 iv3 = z_score(iv3)
@@ -76,7 +119,8 @@ if __name__ == '__main__':
                 plt.scatter(iv3, dv3)
                 plt.show()
 
-                print 'Outliers, log-log-transformation ', i, j, k
+                # Correlation 4
+                print 'Outliers, log-log-transformation ', adm, j, k
                 iv4 = np.log(np.array(np.abs(merged[k]))+1)
                 dv4 = np.log(np.array(np.abs(merged[j]))+1)
                 non_outliers_iv4 = outliers(iv4)
@@ -91,7 +135,8 @@ if __name__ == '__main__':
                 plt.scatter(iv4, dv4)
                 plt.show()
 
-                print 'Outliers, log-linear-transformation ', i, j, k
+                # Correlation 5
+                print 'Outliers, log-linear-transformation ', adm, j, k
                 iv5 = np.log(np.array(np.abs(merged[k]))+1)
                 dv5 = np.array(np.abs(merged[j]))
                 non_outliers_iv5 = outliers(iv5)
@@ -106,7 +151,8 @@ if __name__ == '__main__':
                 plt.scatter(iv5, dv5)
                 plt.show()
 
-                print 'Outliers, linear-log-transformation ', i, j, k
+                # Correlation 6
+                print 'Outliers, linear-log-transformation ', adm, j, k
                 iv6 = np.array(np.abs(merged[k]))
                 dv6 = np.log(np.array(np.abs(merged[j]))+1)
                 non_outliers_iv6 = outliers(iv6)

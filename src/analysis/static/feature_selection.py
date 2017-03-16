@@ -2,6 +2,22 @@ import pandas as pd
 import statsmodels.formula.api as smf
 from prettytable import PrettyTable
 from src.config import config
+import numpy as np
+import sys
+
+def normalise(df, adm):
+    d = df.ix[:, 0]
+    f = df.ix[:, 1:]
+
+    f = f[np.abs(f - f.mean()) <= (3 * f.std())]
+    f.insert(0, adm, d)
+    df = f.dropna()
+
+    f = df.ix[:, 1:]
+    f = (f - f.mean()) / f.std()
+    f.insert(0, adm, d)
+
+    return f
 
 
 def merge(a, b, adm):
@@ -16,68 +32,99 @@ def merge(a, b, adm):
 
 
 def get_country_data(country):
-    source = config.get_dir()
-    if country == 'civ':
-        cdr = pd.DataFrame(pd.read_csv(source+'/final/%s/cdr.csv' % country)).dropna()
-        dhs = pd.DataFrame(pd.read_csv(source+'/final/%s/dhs.csv' % country)).dropna()
-        return cdr, dhs
-    elif country == 'sen':
-        cdr = pd.DataFrame(pd.read_csv(source+'/final/%s/cdr_pop_1km.csv' % country)).dropna()
-        dhs = pd.DataFrame(pd.read_csv(source+'/final/%s/dhs.csv' % country)).dropna()
-        return cdr, dhs
-    else:
-        country = config.get_country()
-        return get_country_data(country)
+    PATH = config.get_dir()
+    return pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_2.0.csv' % country))
 
 
 def output_model(country, model, adm, response):
 
-    cdr, dhs = get_country_data(country)
+    data = get_country_data(country)
 
     if model == 'Baseline':
-        set1 = cdr.groupby(adm)['Log_density_2010'].mean().reset_index()
-        set2 = dhs.groupby(adm)[response].mean().reset_index()
-        return merge(set1, set2, adm)
+        baseline_features = 'Log_pop_density'
 
-    elif model == 'Baseline+CDR':
-        set1_mean = cdr.groupby(adm)['Introversion', 'Log_density_2010',
-                                     'Entropy', 'EigenvectorCentrality',
-                                     'Residuals', 'Vol_pp'].mean().reset_index()
-        set1_sum = cdr.groupby(adm)['Vol'].mean().reset_index()
-        set1 = set1_sum.merge(set1_mean, on=adm)
-        set2 = dhs.groupby(adm)[response].mean().reset_index()
-        return merge(set1, set2, adm)
+        cdr_dhs = data[[adm,
+                        baseline_features,
+                        response]].dropna()
+
+        cdr_dhs = normalise(cdr_dhs, adm)
+
+        cdr = cdr_dhs.groupby(adm)[baseline_features].mean().reset_index()
+        dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
+
+        return merge(cdr, dhs, adm)
 
     elif model == 'CDR':
-        set1_sum = cdr.groupby(adm)['Vol'].sum().reset_index()
-        set1_mean = cdr.groupby(adm)['Entropy', 'EigenvectorCentrality',
-                                     'Vol_pp', 'Residuals', 'Introversion'].mean().reset_index()
-        set1 = set1_sum.merge(set1_mean, on=adm)
-        set2 = dhs.groupby(adm)[response].mean().reset_index()
-        return merge(set1, set2, adm)
+        cdr_dhs = data[[adm,
+                        'Entropy', 'Med_degree', 'Degree_centrality',
+                        'Introversion', 'G_residuals', 'Log_vol', 'Vol_pp',
+                        response]].dropna()
 
-    elif model == 'SpatialLag':
-        set1 = dhs.groupby(adm)['SpatialLag%s' % response].mean().reset_index()
-        set2 = dhs.groupby(adm)[response].mean().reset_index()
-        return merge(set1, set2, adm)
+        cdr_dhs = normalise(cdr_dhs, adm)
+
+        cdr = cdr_dhs.groupby(adm)['Entropy', 'Med_degree', 'Degree_centrality',
+                                   'Introversion','G_residuals','Log_vol', 'Vol_pp'].mean().reset_index()
+        dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
+
+        return merge(cdr, dhs, adm)
+
+    elif model == 'Baseline+CDR':
+        cdr_dhs = data[[adm,
+                        'Log_pop_density',
+                        'Entropy', 'Med_degree', 'Degree_centrality',
+                        'Introversion', 'G_residuals', 'Log_vol', 'Vol_pp',
+                        response]].dropna()
+
+        cdr_dhs = normalise(cdr_dhs, adm)
+
+        cdr = cdr_dhs.groupby(adm)['Log_pop_density',
+                                 'Entropy', 'Med_degree', 'Degree_centrality',
+                                 'Introversion','G_residuals', 'Log_vol', 'Vol_pp'].mean().reset_index()
+        dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
+        return merge(cdr, dhs, adm)
+
+    elif model == 'Lag':
+        lag_features = '%sSL' % response
+
+        cdr_dhs = data[[adm,
+                        lag_features,
+                        response]].dropna()
+
+        cdr_dhs = normalise(cdr_dhs, adm)
+
+        cdr = cdr_dhs.groupby(adm)[lag_features].mean().reset_index()
+        dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
+        return merge(cdr, dhs, adm)
 
     elif model == 'Baseline+Lag':
-        spatial = dhs.groupby(adm)['SpatialLag%s' % response].mean().reset_index()
-        log_dense = cdr.groupby(adm)['Log_density_2010'].mean().reset_index()
-        set1 = spatial.merge(log_dense, on=adm)
-        set2 = dhs.groupby(adm)[response].mean().reset_index()
-        return merge(set1, set2, adm)
+        cdr_dhs = data[[adm,
+                        'Log_pop_density',
+                        '%sSL' % response,
+                        response]].dropna()
+
+        cdr_dhs = normalise(cdr_dhs, adm)
+
+        cdr = cdr_dhs.groupby(adm)['Log_pop_density',
+                                   '%sSL' % response].mean().reset_index()
+        dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
+        return merge(cdr, dhs, adm)
 
     elif model == 'All':
-        spatial = dhs.groupby(adm)['SpatialLag%s' % response].mean().reset_index()
-        log_dense = cdr.groupby(adm)['Log_density_2010'].mean().reset_index()
-        cdr_mean = cdr.groupby(adm)['Residuals', 'Introversion',
-                                     'Entropy', 'EigenvectorCentrality',
-                                     'Vol_pp'].mean().reset_index()
-        cdr_sum = cdr.groupby(adm)['Vol'].sum().reset_index()
-        set1 = cdr_mean.merge(cdr_sum, on=adm).merge(log_dense, on=adm).merge(spatial, on=adm)
-        set2 = dhs.groupby(adm)[response].mean().reset_index()
-        return merge(set1, set2, adm)
+        cdr_dhs = data[[adm,
+                        'Log_pop_density',
+                        '%sSL' % response,
+                        'Entropy',
+                        'Introversion', 'G_residuals', 'Log_vol',
+                        response]].dropna()
+
+        cdr_dhs = normalise(cdr_dhs, adm)
+
+        cdr = cdr_dhs.groupby(adm)['Log_pop_density',
+                                   '%sSL' % response,
+                                   'Entropy',
+                                   'Introversion', 'G_residuals', 'Log_vol'].mean().reset_index()
+        dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
+        return merge(cdr, dhs, adm)
 
 
 def forward_selected(data, response):
@@ -86,6 +133,7 @@ def forward_selected(data, response):
     :param response: name of response variable
     :return: fitted linear model with optimised R^2 value
     """
+
     remaining = set(data.columns)
     remaining.remove(response)
     selected = []
@@ -109,24 +157,23 @@ def forward_selected(data, response):
     return model
 
 def stepwise_regression(country, response):
-    if country == 'civ':
-        models = ['Baseline', 'Baseline+CDR', 'CDR', 'SpatialLag', 'Baseline+Lag', 'All']
-    elif country == 'sen':
-        models = ['Baseline', 'Baseline+CDR', 'CDR']
-    else:
-        models=[]
+    models = config.get_headers(country, 'models')
+    adms = config.get_headers(country, 'adm')
 
     model_table = PrettyTable()
-    model_table.field_names = ['Model'] + ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
+    model_table.field_names = ['Model'] + adms
 
     for model in models:
-        adm_levels = ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
         formulas, r2 = [], []
 
-        for adm in adm_levels:
+        for adm in adms:
             data = output_model(country, model, adm, response)
 
             selected = forward_selected(data, response)
+            print adm, response, model, selected.summary()
+            # np.savetxt('../../../reports/results/%s/statstables/%s_%s.txt' % (country, response, adm),
+            #            [selected.summary().as_csv()], delimiter=' ', fmt='%s')
+
             formulas.append(selected.model.formula), r2.append(selected.rsquared_adj)
 
         model_table.add_row([model,
@@ -135,7 +182,6 @@ def stepwise_regression(country, response):
                              'Model: %s\nR^2-adj: %f\n' % (formulas[2], r2[2]),
                              'Model: %s\nR^2-adj: %f\n' % (formulas[3], r2[3])])
 
-    print model_table
-
+    return model_table
 
 
