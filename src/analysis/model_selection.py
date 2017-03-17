@@ -1,5 +1,5 @@
 from src.config import config
-from src.analysis.static.feature_selection import stepwise_regression
+from src.analysis.feature_selection import stepwise_regression
 import numpy as np
 
 
