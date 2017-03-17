@@ -137,9 +137,12 @@ def get_raw_dhs(country):
         return [malaria, child_mort]
 
 
-def get_master_cdr(country):
+def get_master_cdr(country, *args):
     source=get_dir()
-    return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/cdr_fundamentals.csv' % country))
+    if args == 'adm':
+        return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals_adm.csv' % country))
+    elif args == 'bts':
+        return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals_bts.csv' % country))
 
 
 def get_master_dhs(country):
