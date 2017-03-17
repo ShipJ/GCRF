@@ -3,6 +3,7 @@ import statsmodels.formula.api as smf
 from prettytable import PrettyTable
 from src.config import config
 import numpy as np
+import matplotlib.pyplot as plt
 import sys
 
 def normalise(df, adm):
@@ -170,7 +171,8 @@ def stepwise_regression(country, response):
             data = output_model(country, model, adm, response)
 
             selected = forward_selected(data, response)
-            print adm, response, model, selected.summary()
+            print adm, response, model, selected, selected.summary()
+
             # np.savetxt('../../../reports/results/%s/statstables/%s_%s.txt' % (country, response, adm),
             #            [selected.summary().as_csv()], delimiter=' ', fmt='%s')
 
