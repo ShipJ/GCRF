@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     try:
         vol, dur = adj_matrix(source, country)
-        np.savetxt(target+'/adj_matrix_vol.csv', vol, delimiter=',')
-        np.savetxt(target+'/adj_matrix_dur.csv', dur, delimiter=',')
+        np.savetxt(target+'/adj_matrix_vol_unchanged.csv', vol, delimiter=',')
+        np.savetxt(target+'/adj_matrix_dur_unchanged.csv', dur, delimiter=',')
     except ValueError:
         print 'Looks like your data is missing from interim/%s/cdr/timestamp.' % country
