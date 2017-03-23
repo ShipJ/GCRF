@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from src.config import config
-import sys
 
 
 if __name__ == '__main__':
