@@ -196,7 +196,8 @@ def g_residuals(adj_matrix, dist_matrix, pop, bts_adm, num_towers):
     lm = LinearRegression()
     lm.fit(X, y)
 
-    y_hat = np.array(lm.intercept_[0] * X['log_pop_source'] ** lm.coef_[0][0] * X['log_pop_target'] ** lm.coef_[0][1] * X['Distance(km)'] ** lm.coef_[0][2])
+    y_hat = np.array(lm.intercept_[0] * X['log_pop_source'] ** lm.coef_[0][0]
+                     * X['log_pop_target'] ** lm.coef_[0][1] * X['Distance(km)'] ** lm.coef_[0][2])
 
     residuals = np.array(z - y_hat)
     g_residuals = pd.DataFrame()
@@ -233,16 +234,16 @@ if __name__ == '__main__':
     num_towers = constants['num_towers']
 
     # retrieve adjacency matrices for each country
-    adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country,
+    print 'Retrieving adjacency matrices'
+    adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_unchanged.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country,
+    adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_unchanged.csv' % country,
                                    delimiter=',')
-    # distance_area matrix between bts's
-    dist_matrix = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance_area/dist_matrix_bts.csv' % country))
 
+    # distance_area matrix between CT's
+    dist_matrix = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/distance_area/dist_matrix_bts.csv' % country))
     # population per bts voronoi region (to calculate proportions)
     pop = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
-
     # reference to in which adm 1,2,3,4 each bts belongs
     bts_adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
 
@@ -259,7 +260,8 @@ if __name__ == '__main__':
     cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
                                                [total_activity, entropy, med_deg, graph, introv, g_residuals]))
 
-    cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts.csv' % country, index=None)
+    cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_unchanged.csv'
+                                % country, index=None)
 
 
 
