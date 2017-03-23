@@ -69,8 +69,8 @@ def get_adj_matrix(country):
         """
     PATH = get_dir()
     if country in ['civ', 'sen']:
-        adj_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country, delimiter=',')
-        adj_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country, delimiter=',')
+        adj_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_unchanged.csv' % country, delimiter=',')
+        adj_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_unchanged.csv' % country, delimiter=',')
         return adj_vol, adj_dur
     else:
         print "Please type a correct country abbreviation (lower case): \n"
@@ -93,14 +93,14 @@ def get_pop(country, *args):
         data = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/intersect_pop.csv' % country))
         if len(args) > 0:
             if args[0] in [1, 2, 3, 4]:
-                pop = data.groupby('Adm_%s'%args[0])['Pop_2010'].sum().reset_index()
+                pop = data.groupby('Adm_%s' % args[0])['Pop_2010'].sum().reset_index()
                 return pop
             else:
                 print 'Sorry, it is not possible to aggregate population at that level.\n'
         else:
             return data
     else:
-        print 'Did not recognise country code, please try again: \n'
+        print 'Did not recognise country code, please try again:\n'
         return get_country()
 
 
