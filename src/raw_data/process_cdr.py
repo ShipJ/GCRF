@@ -72,7 +72,7 @@ def save_timestamp(time_stamped, target):
         y, m, d, h = str(current.year), str(current.month), str(current.day), str(current.hour)
         print "Reading %s-%s-%s-%s data" % (y, m, d, '{0:0>2}'.format(h))
         # Store as a time-stamped file
-        # group.to_csv(target + '/%s-%s-%s-%s.csv' % (y, m, d, '{0:0>2}'.format(h)), index=None)
+        group.to_csv(target + '/%s-%s-%s-%s.csv' % (y, m, d, '{0:0>2}'.format(h)), index=None)
 
 
 if __name__ == '__main__':
