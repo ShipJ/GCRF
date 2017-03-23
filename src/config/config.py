@@ -16,9 +16,9 @@ def get_dir():
     :return:
     """
     root_path = os.path.dirname(os.path.abspath(__file__+'../../../'))
-    data_path = root_path+'/data'
-    if data_path.endswith('/data'):
-        return data_path
+    PATH = root_path+'/data'
+    if PATH.endswith('/data'):
+        return PATH
     else:
         print 'Path to data source not found. Check documentation for correct structure. \n'
 
@@ -26,10 +26,8 @@ def get_dir():
 def get_country():
     """
     Ask user for country code.
-
     :return: str - country for which there is data.
     """
-
     print "Process data for which country? ['sen': Senegal, 'civ': Ivory Coast]: "
     input_country = raw_input()
     if input_country == 'sen':
@@ -69,10 +67,10 @@ def get_adj_matrix(country):
         :param country: str - country code.
         :return:
         """
-    source = get_dir()
+    PATH = get_dir()
     if country in ['civ', 'sen']:
-        adj_vol = np.genfromtxt(source + '/processed/%s/cdr/metrics/adj_matrix_vol.csv' % country, delimiter=',')
-        adj_dur = np.genfromtxt(source + '/processed/%s/cdr/metrics/adj_matrix_dur.csv' % country, delimiter=',')
+        adj_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol.csv' % country, delimiter=',')
+        adj_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur.csv' % country, delimiter=',')
         return adj_vol, adj_dur
     else:
         print "Please type a correct country abbreviation (lower case): \n"
@@ -90,9 +88,9 @@ def get_pop(country, *args):
     :param adm:
     :return:
     """
-    source = get_dir()
+    PATH = get_dir()
     if country in ['civ', 'sen']:
-        data = pd.DataFrame(pd.read_csv(source+'/processed/%s/pop/intersect_pop.csv' % country))
+        data = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/intersect_pop.csv' % country))
         if len(args) > 0:
             if args[0] in [1, 2, 3, 4]:
                 pop = data.groupby('Adm_%s'%args[0])['Pop_2010'].sum().reset_index()
@@ -106,55 +104,39 @@ def get_pop(country, *args):
         return get_country()
 
 
-def get_cdr_metrics(country):
-    source = get_dir()
-    activity = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/total_activity.csv' % country))
-    entropy = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/entropy.csv' % country))
-    med_degree = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/med_degree.csv' % country))
-    graph = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/graph_metrics.csv' % country))
-    introversion = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/introversion.csv' % country))
-    residuals = pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/residuals.csv' % country))
-    # Insert some kind of merge function to return one dataframe, push into the func below
-    return activity, entropy, med_degree, graph, introversion, residuals
-
-
 def get_raw_dhs(country):
     """
 
     :param country:
     :return:
     """
-    source = get_dir()
-    malaria = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/malaria.csv' % country))
-    child_mort = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/child_mort.csv' % country))
-
-    # preventable_disease = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/preventable_disease.csv' % country))
+    PATH = get_dir()
+    malaria = pd.DataFrame(pd.read_csv(PATH+'/interim/%s/dhs/malaria.csv' % country))
+    child_mort = pd.DataFrame(pd.read_csv(PATH+'/interim/%s/dhs/child_mort.csv' % country))
     if country == 'civ':
-        hiv = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/hiv.csv' % country))
-        women_health_access = pd.DataFrame(pd.read_csv(source+'/interim/%s/dhs/women_health_access.csv' % country))
+        hiv = pd.DataFrame(pd.read_csv(PATH+'/interim/%s/dhs/hiv.csv' % country))
+        women_health_access = pd.DataFrame(pd.read_csv(PATH+'/interim/%s/dhs/women_health_access.csv' % country))
         return [malaria, hiv, child_mort, women_health_access]
     else:
         return [malaria, child_mort]
 
 
 def get_master_cdr(country, *args):
-    source=get_dir()
-    if args[0] == 'adm':
-        return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals_adm.csv' % country))
-    elif args[0] == 'bts':
-        return pd.DataFrame(pd.read_csv(source+'/processed/%s/cdr/metrics/cdr_fundamentals_bts.csv' % country))
+    PATH=get_dir()
+    return pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_%s.csv' % (country, args[0])))
 
 
 def get_master_dhs(country):
-    source=get_dir()
-    return pd.DataFrame(pd.read_csv(source+'/processed/%s/dhs/dhs_fundamentals_adm.csv' % country))
+    PATH=get_dir()
+    return pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/dhs_fundamentals_adm.csv' % country))
 
 
 def get_master_other(country):
-    source=get_dir()
-    return pd.DataFrame(pd.read_csv(source+'processed/%s/dhs/wealth/dhs_wealth_poverty.csv' % country,
-                                    usecols=['UrbRur', 'Poverty', 'Z_Med', 'Capital', 'Pop_1km',
-                                             'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']))
+    PATH=get_dir()
+    features = ['UrbRur', 'Poverty', 'Z_Med', 'Capital', 'Pop_1km', 'Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
+
+    return pd.DataFrame(pd.read_csv(PATH+'processed/%s/dhs/wealth/dhs_wealth_poverty.csv' % country,
+                                    usecols=features))
 
 
 def get_headers(country, *args):
@@ -166,12 +148,10 @@ def get_headers(country, *args):
                 'Pagerank']
     elif args[0] == 'dhs':
         if country == 'civ':
-            return ['BloodPosRate'] # , 'RapidPosRate', 'PosRate', 'DeathRate', 'DifficultyScore'
+            return ['BloodPosRate', 'RapidPosRate', 'PosRate', 'DeathRate', 'DifficultyScore']
         elif country == 'sen':
-            return ['BloodPosRate'] # , 'RapidPosRate', 'DeathRate'
+            return ['BloodPosRate', 'RapidPosRate', 'DeathRate']
     elif args[0] == 'models':
         return ['Baseline', 'CDR', 'Baseline+CDR', 'Lag', 'Baseline+Lag', 'All']
     elif args[0] == 'group':
         return ['Poverty', 'Z_Med', 'UrbRur', 'Capital']
-
-
