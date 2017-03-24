@@ -235,9 +235,9 @@ if __name__ == '__main__':
 
     # retrieve adjacency matrices for each country
     print 'Retrieving adjacency matrices'
-    adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_all.csv' % country,
+    adj_matrix_vol_all = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_all.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_all.csv' % country,
+    adj_matrix_dur_all = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_all.csv' % country,
                                    delimiter=',')
 
     # distance_area matrix between CT's
@@ -248,13 +248,13 @@ if __name__ == '__main__':
     bts_adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
 
     # Individual metrics
-    total_activity = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
-    deg_vector = degree_vector(num_towers, adj_matrix_vol)
-    entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
-    med_deg = med_degree(num_towers, adj_matrix_vol)
-    graph = graph_metrics(adj_matrix_vol)
-    introv = introversion(num_towers, adj_matrix_vol)
-    g_residuals = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
+    total_activity = activity(num_towers, adj_matrix_vol_all, adj_matrix_dur_all)
+    deg_vector = degree_vector(num_towers, adj_matrix_vol_all)
+    entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol_all, deg_vector)
+    med_deg = med_degree(num_towers, adj_matrix_vol_all)
+    graph = graph_metrics(adj_matrix_vol_all)
+    introv = introversion(num_towers, adj_matrix_vol_all)
+    g_residuals = g_residuals(adj_matrix_vol_all, dist_matrix, pop, bts_adm, num_towers)
 
     # Merge individual metrics into single dataframe, preserving missing adm's as NaN's
     cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
