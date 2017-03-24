@@ -41,9 +41,8 @@ def model_1(cdr_bts, country, PATH):
 if __name__ == '__main__':
     PATH = config.get_dir()
     country = config.get_country()
-    cdr_fundamentals_bts_all = pd.DataFrame(pd.read_csv(PATH +
-                                                    '/processed/%s/cdr/metrics/cdr_fundamentals_bts_all.csv' % country))
-
-    # Using Model 1 (reference literature), aggregate CT level data to administrative levels
-    cdr_fundamentals_adm_all = model_1(cdr_fundamentals_bts_all, country, PATH)
-    cdr_fundamentals_adm_all.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_adm_all.csv' % country, index=None)
+    for i in ['all', 'working']:
+        cdr_bts = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_%s.csv' % (country, i)))
+        # Using Model 1 (reference literature), aggregate CT level data to administrative levels
+        cdr_adm = model_1(cdr_bts, country, PATH)
+        cdr_adm.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_aggregate_adm_%s.csv' % (country, i), index=None)
