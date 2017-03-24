@@ -22,7 +22,8 @@ if __name__ == '__main__':
         area = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/distance_area/area.csv' % country, usecols=['Adm_4',
                                                                                                         'Area_m2',
                                                                                                         'Area_km2']))
-        cdr_fundamentals = cdr_fundamentals.merge(area, on='Adm_4', how='outer')
+
+        cdr_fundamentals = cdr_fundamentals.merge(area, on='Adm_4')
         # Volume per person
         cdr_fundamentals['Vol_pp'] = cdr_fundamentals['Vol']/cdr_fundamentals['Pop_2010']
         # Population density
