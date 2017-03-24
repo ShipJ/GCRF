@@ -235,9 +235,9 @@ if __name__ == '__main__':
 
     # retrieve adjacency matrices for each country
     print 'Retrieving adjacency matrices'
-    adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_unchanged.csv' % country,
+    adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_all.csv' % country,
                                    delimiter=',')
-    adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_unchanged.csv' % country,
+    adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_all.csv' % country,
                                    delimiter=',')
 
     # distance_area matrix between CT's
@@ -260,7 +260,7 @@ if __name__ == '__main__':
     cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
                                                [total_activity, entropy, med_deg, graph, introv, g_residuals]))
 
-    cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_unchanged.csv'
+    cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_all.csv'
                                 % country, index=None)
 
 
