@@ -17,13 +17,12 @@ if __name__ == '__main__':
                                                     % (country, i)))
 
         # Population of each adm region - region 4 accounts for regions 1, 2 and 3
-        cdr_fundamentals = cdr_fundamentals.merge(config.get_pop(country, 4), on='Adm_4')
+        bts_pop = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
         # Area in m^2 and km^2 of each adm region
-        area = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/distance_area/area.csv' % country, usecols=['Adm_4',
-                                                                                                        'Area_m2',
-                                                                                                        'Area_km2']))
-
-        cdr_fundamentals = cdr_fundamentals.merge(area, on='Adm_4')
+        area = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance_area/area.csv' % country, usecols=['Adm_4',
+                                                                                                          'Area_m2',
+                                                                                                          'Area_km2']))
+        cdr_fundamentals = cdr_fundamentals.merge(bts_pop, on='CellTowerID', how='outer').merge(area, on='Adm_4')
         # Volume per person
         cdr_fundamentals['Vol_pp'] = cdr_fundamentals['Vol']/cdr_fundamentals['Pop_2010']
         # Population density
