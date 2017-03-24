@@ -39,14 +39,11 @@ def model_1(cdr_bts, country, PATH):
     return pd.DataFrame(pd.concat([adm, cdr_fundamentals_adm], axis=1))
 
 if __name__ == '__main__':
-    # path to data store
     PATH = config.get_dir()
-    # ask user for country, retrieve country constants
     country = config.get_country()
-    # Retrieve CDR data
-    cdr_fundamentals_bts = pd.DataFrame(pd.read_csv(PATH +
-                                                    '/processed/%s/cdr/metrics/cdr_fundamentals_bts.csv' % country))
+    cdr_fundamentals_bts_all = pd.DataFrame(pd.read_csv(PATH +
+                                                    '/processed/%s/cdr/metrics/cdr_fundamentals_bts_all.csv' % country))
 
     # Using Model 1 (reference literature), aggregate CT level data to administrative levels
-    cdr_fundamentals_adm = model_1(cdr_fundamentals_bts, country, PATH)
-    cdr_fundamentals_adm.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_adm.csv' % country, index=None)
+    cdr_fundamentals_adm_all = model_1(cdr_fundamentals_bts_all, country, PATH)
+    cdr_fundamentals_adm_all.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_adm_all.csv' % country, index=None)

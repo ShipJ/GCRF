@@ -1,7 +1,5 @@
 from src.config import config
 from src.analysis.feature_selection import stepwise_regression
-import numpy as np
-
 
 if __name__ == '__main__':
     country = config.get_country()
@@ -13,10 +11,7 @@ if __name__ == '__main__':
             a = [stepwise_regression(country, response).get_string()]
         elif country == 'sen':
             a = [stepwise_regression(country, response).get_string()]
-        else:
-            a = ['']
 
-        # np.savetxt('../../../reports/results/%s/r_squared/%s.txt' % response, a, fmt='%s')
 
 
 

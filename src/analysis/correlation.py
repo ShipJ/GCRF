@@ -1,11 +1,10 @@
 """
-TODO: Model 1: No data transformation, minimal outlier detection applied, no distance weighted function,
-no sparsification applied either - i.e. using all data, all links, at all times. 
+This module
 """
 
 import pandas as pd
 import numpy as np
-from scipy.stats import pearsonr, spearmanr, norm
+from scipy.stats import pearsonr, norm, boxcox
 import matplotlib.pyplot as plt
 from src.config import config
 import sys
@@ -47,7 +46,7 @@ def outliers2(df, iv, dv, adm, thresh=3.5):
 
 
 def z_score(df):
-    return np.array((df-np.mean(df))/np.std(df))
+    return (df-np.mean(df))/np.std(df)
 
 
 def corr_pvalue_conf(df):
@@ -78,7 +77,10 @@ def aggregate_median(data, features, adm):
     return data.groupby(adm)[features].mean().reset_index()
 
 def transform(df, cdr, dhs, model, adm):
-    df[cdr], df[dhs] = df[cdr]+abs(min(df[cdr])), df[dhs]+abs(min(df[dhs]))
+    df = df[df[dhs] > 0]
+    df[cdr], df[dhs] = df[cdr]+abs(min(df[cdr]))+1, df[dhs]+abs(min(df[dhs]))+1
+    df = df.dropna()
+
     if model == 1:
         iv, dv = df[cdr], df[dhs]
         df[cdr], df[dhs] = z_score(iv), z_score(dv)
@@ -106,6 +108,16 @@ def transform(df, cdr, dhs, model, adm):
         df = outliers2(df, k, j, adm)
         df[cdr], df[dhs] = z_score(df[cdr]), z_score(df[dhs])
         return df
+    elif model == 7:
+        df = outliers2(df, k, j, adm)
+        df[cdr], df[dhs] = z_score(np.log(df[cdr])), z_score(np.log(df[dhs]))
+        return df
+    elif model == 8:
+        df = outliers2(df, k, j, adm)
+        df[cdr], df[dhs] = boxcox(df[cdr])[0], (df[dhs] + 1)[0]
+
+        df[cdr], df[dhs] = z_score(df[cdr]), z_score(df[dhs])
+        return df
 
 
 def group_scatter(iv, dv, lower, upper, group):
@@ -126,11 +138,12 @@ if __name__ == '__main__':
     group = 'None'
     models = ['No outliers, no transformation ', 'Outliers, no transformation ',
               'No outliers, log-log-transformation ', 'Outliers, log-log-transformation ',
-              'Outliers, log-linear-transformation ', 'Outliers, linear-log-transformation ']
+              'Outliers, log-linear-transformation ', 'Outliers, linear-log-transformation ',
+              'Outliers, then log-log ', 'root root', 'noth root', 'root noth', 'root log']
 
-    data = pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_2.0.csv' % country))
+    data = pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_4.0.csv' % country))
 
-    for adm in adms:
+    for adm in np.setdiff1d(adms, ['Adm_1', 'Adm_2']):
         dhs_adm = aggregate_mean(data, dhs_features, adm)
         cdr_sum_adm = aggregate_sum(data, cdr_features[:6], adm)
         cdr_mean_adm = aggregate_mean(data, cdr_features[6:], adm)
@@ -153,7 +166,7 @@ if __name__ == '__main__':
                     if country == 'civ':
                         merged = merged.merge(group_adm, on=adm).dropna()
 
-                for i in range(6):
+                for i in range(8):
                     print models[i], adm, j, k
                     transformed = transform(merged.copy(), k, j, i+1, adm)
                     iv, dv = transformed[k], transformed[j]
