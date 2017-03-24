@@ -233,35 +233,35 @@ if __name__ == '__main__':
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
 
-    # retrieve adjacency matrices for each country
-    print 'Retrieving adjacency matrices'
-    adj_matrix_vol_all = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_all.csv' % country,
-                                   delimiter=',')
-    adj_matrix_dur_all = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_all.csv' % country,
-                                   delimiter=',')
-
     # distance_area matrix between CT's
-    dist_matrix = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/distance_area/dist_matrix_bts.csv' % country))
+    dist_matrix = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance_area/dist_matrix_bts.csv' % country))
     # population per bts voronoi region (to calculate proportions)
-    pop = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
+    pop = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/pop/bts_voronoi_pop.csv' % country))
     # reference to in which adm 1,2,3,4 each bts belongs
-    bts_adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
+    bts_adm = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
 
-    # Individual metrics
-    total_activity = activity(num_towers, adj_matrix_vol_all, adj_matrix_dur_all)
-    deg_vector = degree_vector(num_towers, adj_matrix_vol_all)
-    entropy = entropy(total_activity[['CellTowerID', 'Vol']], adj_matrix_vol_all, deg_vector)
-    med_deg = med_degree(num_towers, adj_matrix_vol_all)
-    graph = graph_metrics(adj_matrix_vol_all)
-    introv = introversion(num_towers, adj_matrix_vol_all)
-    g_residuals = g_residuals(adj_matrix_vol_all, dist_matrix, pop, bts_adm, num_towers)
+    for i in ['all', 'working']:
+        # retrieve adjacency matrices for each country
+        print 'Retrieving adjacency matrices'
+        adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_%s.csv' % (country, i),
+                                       delimiter=',')
+        adj_matrix_dur = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_dur_%s.csv' % (country, i),
+                                       delimiter=',')
 
-    # Merge individual metrics into single dataframe, preserving missing adm's as NaN's
-    cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
-                                               [total_activity, entropy, med_deg, graph, introv, g_residuals]))
-
-    cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_all.csv'
-                                % country, index=None)
-
+        # Compute metrics using particular adjacency matrix
+        total_activ = activity(num_towers, adj_matrix_vol, adj_matrix_dur)
+        deg_vector = degree_vector(num_towers, adj_matrix_vol)
+        entrop = entropy(total_activ[['CellTowerID', 'Vol']], adj_matrix_vol, deg_vector)
+        med_deg = med_degree(num_towers, adj_matrix_vol)
+        graph = graph_metrics(adj_matrix_vol)
+        introv = introversion(num_towers, adj_matrix_vol)
+        g_resids = g_residuals(adj_matrix_vol, dist_matrix, pop, bts_adm, num_towers)
+    
+        # Merge individual metrics into single dataframe, preserving missing adm's as NaN's
+        cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
+                                                   [total_activ, entrop, med_deg, graph, introv, g_resids]))
+    
+        cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_%s.csv'
+                                    % (country, i), index=None)
 
 
