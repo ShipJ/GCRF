@@ -186,7 +186,7 @@ if __name__ == '__main__':
         malaria, child_mort = dhs
         mal, agg_mal = malaria_rate(PATH, malaria, country)
         child, agg_child = child_mort_rate(PATH, child_mort, country)
-        master_raw = mal.merge(child, on='Adm_4').set_index('Adm_4')
+        master_raw = agg_mal.merge(agg_child, on='Adm_4').set_index('Adm_4')
 
     dhs_fundamentals = master_raw.reindex(range(constants['Adm_4']+1)).reset_index()
     adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/bts/adm_1234.csv' % country))
