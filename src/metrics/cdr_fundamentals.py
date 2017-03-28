@@ -241,7 +241,10 @@ if __name__ == '__main__':
     bts_adm = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/cdr/bts/bts_adm_1234.csv' % country))
 
     for i in ['all', 'working']:
-        # retrieve adjacency matrices for each country
+        # retrieve adjacency
+        #
+        #
+        #  matrices for each country
         print 'Retrieving adjacency matrices'
         adj_matrix_vol = np.genfromtxt(PATH+'/processed/%s/cdr/adjacency/adj_matrix_vol_%s.csv' % (country, i),
                                        delimiter=',')
@@ -261,7 +264,7 @@ if __name__ == '__main__':
         cdr_fundamentals_bts = pd.DataFrame(reduce(lambda left, right: pd.merge(left, right,on=['CellTowerID']),
                                                    [total_activ, entrop, med_deg, graph, introv, g_resids]))
     
-        cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_%s.csv'
-                                    % (country, i), index=None)
+        # cdr_fundamentals_bts.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_%s.csv'
+        #                             % (country, i), index=None)
 
 

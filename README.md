@@ -1,7 +1,7 @@
 Project
 ==============================
 
-UCL Project
+UCL GCRF Project
 
 Project Organization
 ------------
