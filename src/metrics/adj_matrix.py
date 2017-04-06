@@ -18,9 +18,9 @@ from src.config import config
 
 def hour_select(all_hours, to_examine):
     """
-    Use either 'all' of the data, or only data within a certain time-period, working hours for example.
+    Use either 'all' of the data, or only data within a certain time-period - working hours for example.
     :param all_hours: the list of all time-stamped filenames
-    :param to_examine: should give parameter 'all' or 'working'
+    :param to_examine: 'all' or 'working'
     :return:
     """
     if to_examine == 'all':
@@ -46,7 +46,6 @@ def adj_matrix(source, country, hours_of_day):
     :param country: str - country code.
     :return: None.
     """
-
     constants = config.get_constants(country)
     num_towers = constants['num_towers']
 
@@ -54,8 +53,9 @@ def adj_matrix(source, country, hours_of_day):
     coo_vol = sparse.coo_matrix((num_towers, num_towers))
     coo_dur = sparse.coo_matrix((num_towers, num_towers))
 
+    # List of timestamped file names
     all_hours = [i for i in os.listdir(source) if not i.startswith('.')]
-
+    # Select which hours to analyse
     hours_to_examine = hour_select(all_hours, hours_of_day)
 
     for f in hours_to_examine:
@@ -65,21 +65,24 @@ def adj_matrix(source, country, hours_of_day):
             missing = np.where(cdr == -1)
             # Convert to imaginary cell tower ID (this is not useful, but aids processing)
             cdr[missing] = num_towers-1
+            # Sum cell tower activities
             coo_vol += sparse.coo_matrix((cdr[:, 2], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
             coo_dur += sparse.coo_matrix((cdr[:, 3], (cdr[:, 0], cdr[:, 1])), shape=(num_towers, num_towers))
 
     # Sparse to dense matrix (i.e. full adjacency matrix)
     coo_vol = coo_vol.todense().reshape(num_towers, num_towers)
     coo_dur = coo_dur.todense().reshape(num_towers, num_towers)
-
     return coo_vol, coo_dur
 
 
 if __name__ == '__main__':
-    country = config.get_country()
-    PATH = config.get_dir()
 
-    source = PATH+'/interim/%s/cdr/timestamp/' % country
+    # System path to data directory
+    PATH = config.get_dir()
+    # Ask user which country to process
+    country = config.get_country()
+
+    source = PATH+'/interim/%s/cdr/' % country
     target = PATH+'/processed/%s/cdr/adjacency' % country
 
     try:
@@ -92,6 +95,10 @@ if __name__ == '__main__':
         vol_working, dur_working = adj_matrix(source, country, hours_of_day='working')
         np.savetxt(target + '/adj_matrix_vol_working.csv', vol_working, delimiter=',')
         np.savetxt(target + '/adj_matrix_dur_working.csv', dur_working, delimiter=',')
+
+        # Other important times?
+        #
+        #
 
     except ValueError:
         print 'Looks like your data is missing from interim/%s/cdr/timestamp.' % country
