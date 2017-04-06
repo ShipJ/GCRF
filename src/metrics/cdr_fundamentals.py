@@ -103,7 +103,7 @@ def med_degree(adj_vol, ct):
     total_deg = np.zeros(ct)
     for i in range(ct):
         total_deg[i] = np.sum(np.delete(np.concatenate((adj[i, :], adj[:, i])), i))
-    med_deg, med_deg['CellTowerID'], med_deg['Med_degree'] = pd.DataFrame(), np.array(range(ct)), total_deg
+    med_deg, med_deg['CellTowerID'], med_deg['Med_deg'] = pd.DataFrame(), np.array(range(ct)), total_deg
     return med_deg
 
 def introversion(adj_vol, ct):
