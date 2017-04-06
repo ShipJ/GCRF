@@ -250,5 +250,5 @@ if __name__ == '__main__':
         cdr_fundamentals_ct = compute_merge(adj_matrix_vol, adj_matrix_dur, num_ct, ct_dist_matrix, ct_adm, pop)
         # Save to csv
         cdr_fundamentals_ct.to_csv(PATH +
-                                   '/processed/%s/cdr/metrics/cdr_fundamentals_bts_%s.csv' % (country, i),
+                                   '/processed/%s/cdr/metrics/cdr_fundamentals_ct_%s.csv' % (country, i),
                                    index=None)
