@@ -143,8 +143,8 @@ def get_headers(country, *args):
     if args[0] == 'adm':
         return ['Adm_1', 'Adm_2', 'Adm_3', 'Adm_4']
     elif args[0] == 'cdr':
-        return ['Vol', 'Entropy', 'Introversion', 'Med_degree',
-                'Degree_centrality', 'EigenvectorCentrality', 'G_residuals', 'Log_vol', 'Vol_pp', 'Log_pop_density',
+        return ['Vol', 'Entropy', 'Introversion', 'Med_deg',
+                'Deg_central', 'Eig_central', 'G_resids', 'Log_vol', 'Vol_pp', 'Log_pop_density',
                 'Pagerank']
     elif args[0] == 'dhs':
         if country == 'civ':
