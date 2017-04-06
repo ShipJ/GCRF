@@ -141,7 +141,7 @@ if __name__ == '__main__':
               'Outliers, log-linear-transformation ', 'Outliers, linear-log-transformation ',
               'Outliers, then log-log ', 'root root', 'noth root', 'root noth', 'root log']
 
-    data = pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_4.0.csv' % country))
+    data = pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_SL.csv' % country))
 
     for adm in np.setdiff1d(adms, ['Adm_1', 'Adm_2']):
         dhs_adm = aggregate_mean(data, dhs_features, adm)

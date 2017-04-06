@@ -35,6 +35,8 @@ if __name__ == '__main__':
         cdr_derived['Pop_density'] = cdr_derived['Pop_2010']/cdr_derived['Area_km2']
         # Log(Pop density)
         cdr_derived['Log_pop_density'] = np.log(cdr_derived['Pop_density'])
+        # Log(Volume)
+        cdr_derived['Log_vol'] = np.log(cdr_derived['Vol'])
 
         # Save derived metrics to csv
         cdr_derived.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_derived_adm_%s.csv' % (country, i), index=None)
