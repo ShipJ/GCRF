@@ -189,9 +189,9 @@ if __name__ == '__main__':
         master_raw = agg_mal.merge(agg_child, on='Adm_4').set_index('Adm_4')
 
     dhs_fundamentals = master_raw.reindex(range(constants['Adm_4']+1)).reset_index()
-    adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/bts/adm_1234.csv' % country))
+    adm = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/ct_locations/adm_1234.csv' % country))
     dhs_fundamentals = pd.DataFrame(dhs_fundamentals.merge(adm, on='Adm_4', how='outer'))
 
-    dhs_fundamentals.to_csv(PATH+'/processed/%s/dhs/dhs_fundamentals_adm.csv' % country, index=None)
+    dhs_fundamentals.to_csv(PATH+'/processed/%s/dhs/metrics/dhs_fundamentals_adm.csv' % country, index=None)
 
 
