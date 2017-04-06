@@ -6,23 +6,28 @@ normalisations and derived metrics (i.e. metrics that involve multiple variables
 import pandas as pd
 import numpy as np
 from src.config import config
-
+import sys
 
 if __name__ == '__main__':
     PATH = config.get_dir()
     country = config.get_country()
 
-    for i in ['all', 'working']:
-        cdr_fundamentals = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_bts_%s.csv'
+    for i in ['all']:
+        cdr_fundamentals = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/cdr/metrics/cdr_fundamentals_ct_%s.csv'
                                                     % (country, i)))
 
-        # Population of each adm region - region 4 accounts for regions 1, 2 and 3
-        bts_pop = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/bts_voronoi_pop.csv' % country))
+        # Population of each adm region
+        ct_pop = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/intersect_pop.csv' % country))
+        ct_pop = ct_pop.groupby('CellTowerID')['Pop_2010'].sum().reset_index()
+
         # Area in m^2 and km^2 of each adm region
-        area = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/distance_area/area.csv' % country, usecols=['Adm_4',
-                                                                                                          'Area_m2',
-                                                                                                          'Area_km2']))
-        cdr_fundamentals = cdr_fundamentals.merge(bts_pop, on='CellTowerID', how='outer').merge(area, on='Adm_4')
+        area = pd.DataFrame(pd.read_csv(PATH + '/processed/%s/geo/area.csv' % country,
+                                        usecols=['Adm_4', 'Area_m2', 'Area_km2']))
+
+        print area
+
+        sys.exit()
+        cdr_fundamentals = cdr_fundamentals.merge(ct_pop, on='CellTowerID', how='outer').merge(area, on='Adm_4')
         # Volume per person
         cdr_fundamentals['Vol_pp'] = cdr_fundamentals['Vol']/cdr_fundamentals['Pop_2010']
         # Population density
