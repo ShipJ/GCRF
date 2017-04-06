@@ -37,4 +37,4 @@ if __name__ == '__main__':
         cdr_derived['Log_pop_density'] = np.log(cdr_derived['Pop_density'])
 
         # Save derived metrics to csv
-        cdr_derived.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_derived_ct_%s.csv' % (country, i), index=None)
+        cdr_derived.to_csv(PATH+'/processed/%s/cdr/metrics/cdr_derived_adm_%s.csv' % (country, i), index=None)
