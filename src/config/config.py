@@ -128,7 +128,7 @@ def get_master_cdr(country, *args):
 
 def get_master_dhs(country):
     PATH=get_dir()
-    return pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/dhs_fundamentals_adm.csv' % country))
+    return pd.DataFrame(pd.read_csv(PATH+'/processed/%s/dhs/metrics/dhs_fundamentals_adm.csv' % country))
 
 
 def get_master_other(country):
