@@ -3,67 +3,52 @@ This module takes raw csv/tsv data containing call detail records
 and converts it into individual time-stamped csv files
 """
 
+import os
 import pandas as pd
 import tarfile as tf
-import os
 from src.config import config
 
 
-def process_raw(source, target, country):
+def process_raw(path, country):
     """
     From raw zip/tar files containing CDR data, extract tsv's,
     split files by timestamp, store in individual files.
 
-    :param source: str - file path to raw data.
-    :param target: str - file path to save processed data.
-    :param country: str - country code.
+    :param path: str - system path to data directory
+    :param country: str - country location tag
 
-    :return: None.
+    :return:
     """
     if country == 'civ':
-        file = tf.open(source+'.zip', 'r')
-        for f in file:
+        files = tf.open(path+'/raw/%s/cdr/SET1TSV.tgz' % country, 'r')
+        for f in files:
             print "Reading %s..." % f.name
-            df = pd.DataFrame.from_csv(file.extractfile(f), sep='\t', header=None).reset_index()
+            df = pd.DataFrame.from_csv(files.extractfile(f), sep='\t', header=None).reset_index()
             df.columns = ['datetime', 'source', 'target', 'activity', 'duration']
             # Split file by timestamp
             time_stamped = df.groupby('datetime')
-            save_timestamp(time_stamped, target)
+            save_timestamp(PATH, time_stamped, country)
 
     elif country == 'sen':
-        file = [i for i in os.listdir(source) if i.startswith('SET1V')]
-        for f in file:
+        files = [i for i in os.listdir(path+'/raw/%s/cdr' % country) if i.startswith('SET1V')]
+        for f in files:
             print "Reading %s..." % f
-            df = pd.DataFrame.from_csv(source+'/'+f, sep=',', header=None).reset_index()
+            df = pd.DataFrame.from_csv(path+'/raw/%s/cdr/'+f, sep=',', header=None).reset_index()
             df.columns = ['datetime', 'source', 'target', 'activity', 'duration']
             # Split file by timestamp
             time_stamped = df.groupby('datetime')
-            save_timestamp(time_stamped, target)
+            save_timestamp(PATH, time_stamped, country)
 
 
-def which_data():
-    """
-    Ask user for particular data set to process - there are four from the D4D challenge
-
-    :return: str - data set reference
-    """
-    print "Process which data set? [1, 2, 3 or 4?]: "
-    data_set = raw_input()
-    if data_set in ['1', '2', '3', '4']:
-        return data_set
-    else:
-        print "Please type an actual data set. \n"
-        return which_data()
-
-
-def save_timestamp(time_stamped, target):
+def save_timestamp(path, time_stamped, country):
     """
     Take time-stamped data and store in target file
 
+    :param path: str - system path to data directory
     :param time-stamped: pandas groupby object - from process_raw()
-    :param target: str - store in interim data files
+    :param country: str - country locatio tag
 
-    :return: None
+    :return:
     """
     for name, group in time_stamped:
         # Grab current datetime
@@ -72,17 +57,13 @@ def save_timestamp(time_stamped, target):
         y, m, d, h = str(current.year), str(current.month), str(current.day), str(current.hour)
         print "Reading %s-%s-%s-%s data" % (y, m, d, '{0:0>2}'.format(h))
         # Store as a time-stamped file
-        group.to_csv(target + '/%s-%s-%s-%s.csv' % (y, m, d, '{0:0>2}'.format(h)), index=None)
+        group.to_csv(path+'/interim/%s/cdr/%s-%s-%s-%s.csv' % (country, y, m, d, '{0:0>2}'.format(h)), index=None)
 
 
 if __name__ == '__main__':
-    # Ask user for country code and data set
-    country = config.get_country()
-    data_set = which_data()
+    # Path to data
     PATH = config.get_dir()
-
-    # Grab data from raw, process, save to interim
-    source = PATH+'/raw/%s/cdr/CDR%s' % (country, data_set)
-    target = source+'/interim/%s/CDR/timestamp/' % country
-
-    process_raw(source, target, country)
+    # Ask for country code
+    country = config.get_country()
+    # Grab raw, save to interim
+    process_raw(PATH, country)
