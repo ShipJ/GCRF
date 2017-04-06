@@ -45,8 +45,8 @@ def save_timestamp(path, time_stamped, country):
     Take time-stamped data and store in target file
 
     :param path: str - system path to data directory
-    :param time-stamped: pandas groupby object - from process_raw()
-    :param country: str - country locatio tag
+    :param time_stamped: pandas groupby object - from process_raw()
+    :param country: str - country location tag
 
     :return:
     """
