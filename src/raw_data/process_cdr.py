@@ -33,7 +33,7 @@ def process_raw(path, country):
         files = [i for i in os.listdir(path+'/raw/%s/cdr' % country) if i.startswith('SET1V')]
         for f in files:
             print "Reading %s..." % f
-            df = pd.DataFrame.from_csv(path+'/raw/%s/cdr/'+f, sep=',', header=None).reset_index()
+            df = pd.DataFrame.from_csv(path+'/raw/%s/cdr/'% country+f, sep=',', header=None).reset_index()
             df.columns = ['datetime', 'source', 'target', 'activity', 'duration']
             # Split file by timestamp
             time_stamped = df.groupby('datetime')
