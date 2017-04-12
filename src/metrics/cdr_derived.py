@@ -21,7 +21,10 @@ if __name__ == '__main__':
 
         # Population of adm regions
         ct_pop = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/pop/intersect_pop.csv' % country))
-        ct_pop = ct_pop.groupby('Adm_4')['Pop_2010', 'Pop_2014'].sum().reset_index()
+        if country == 'civ':
+            ct_pop = ct_pop.groupby('Adm_4')['Pop_2010', 'Pop_2014'].sum().reset_index()
+        else:
+            ct_pop = ct_pop.groupby('Adm_4')['Pop_2010'].sum().reset_index()
 
         # Area in m^2 and km^2 of each adm region
         area = pd.DataFrame(pd.read_csv(PATH+'/processed/%s/geo/area.csv' % country,
