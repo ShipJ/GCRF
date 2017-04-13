@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from src.config import config
 import sys
 
-# Plot parameters
+# Figure parameters
 plt.rcParams['figure.facecolor']='white'
 
 
@@ -19,6 +19,7 @@ def outliers(df, iv, dv, adm):
     for i in (outliers_iv+outliers_dv):
         df = df[df[adm] != i]
     return df
+
 
 def outliers2(df, iv, dv, adm, thresh=3.5):
 
@@ -112,12 +113,6 @@ def transform(df, cdr, dhs, model, adm):
         df = outliers2(df, k, j, adm)
         df[cdr], df[dhs] = z_score(np.log(df[cdr])), z_score(np.log(df[dhs]))
         return df
-    elif model == 8:
-        df = outliers2(df, k, j, adm)
-        df[cdr], df[dhs] = boxcox(df[cdr])[0], (df[dhs] + 1)[0]
-
-        df[cdr], df[dhs] = z_score(df[cdr]), z_score(df[dhs])
-        return df
 
 
 def group_scatter(iv, dv, lower, upper, group):
@@ -143,7 +138,7 @@ if __name__ == '__main__':
 
     data = pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_SL.csv' % country))
 
-    for adm in np.setdiff1d(adms, ['Adm_1', 'Adm_2']):
+    for adm in np.setdiff1d(adms, ['Adm_1']):
         dhs_adm = aggregate_mean(data, dhs_features, adm)
         cdr_sum_adm = aggregate_sum(data, cdr_features[:6], adm)
         cdr_mean_adm = aggregate_mean(data, cdr_features[6:], adm)
@@ -166,7 +161,7 @@ if __name__ == '__main__':
                     if country == 'civ':
                         merged = merged.merge(group_adm, on=adm).dropna()
 
-                for i in range(8):
+                for i in range(7):
                     print models[i], adm, j, k
                     transformed = transform(merged.copy(), k, j, i+1, adm)
                     iv, dv = transformed[k], transformed[j]

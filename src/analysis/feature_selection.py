@@ -3,8 +3,6 @@ import statsmodels.formula.api as smf
 from prettytable import PrettyTable
 from src.config import config
 import numpy as np
-import matplotlib.pyplot as plt
-import sys
 
 def normalise(df, adm):
     d = df.ix[:, 0]
@@ -34,7 +32,7 @@ def merge(a, b, adm):
 
 def get_country_data(country):
     PATH = config.get_dir()
-    return pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_2.0.csv' % country))
+    return pd.DataFrame(pd.read_csv(PATH+'/final/%s/master_SL.csv' % country))
 
 
 def output_model(country, model, adm, response):
@@ -56,29 +54,29 @@ def output_model(country, model, adm, response):
 
     elif model == 'CDR':
         cdr_dhs = data[[adm,
-                         'Degree_centrality','Entropy', 'EigenvectorCentrality',
-                        'Pagerank',  'G_residuals', 'Vol_pp',
+                         'Deg_central','Entropy', 'Eig_central',
+                        'Pagerank',  'G_resids', 'Vol_pp',
                         response]].dropna()
 
         cdr_dhs = normalise(cdr_dhs, adm)
 
-        cdr = cdr_dhs.groupby(adm)[ 'Degree_centrality','Entropy', 'EigenvectorCentrality',
-                        'Pagerank', 'G_residuals',  'Vol_pp'].mean().reset_index()
+        cdr = cdr_dhs.groupby(adm)['Deg_central','Entropy', 'Eig_central',
+                        'Pagerank', 'G_resids',  'Vol_pp'].mean().reset_index()
         dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
 
         return merge(cdr, dhs, adm)
 
     elif model == 'Baseline+CDR':
         cdr_dhs = data[[adm,
-                         'Degree_centrality','Entropy', 'EigenvectorCentrality',
-                        'Pagerank', 'G_residuals',  'Vol_pp',
+                         'Deg_central','Entropy', 'Eig_central',
+                        'Pagerank', 'G_resids',  'Vol_pp',
                         'Log_pop_density',
                         response]].dropna()
 
         cdr_dhs = normalise(cdr_dhs, adm)
 
-        cdr = cdr_dhs.groupby(adm)[ 'Degree_centrality', 'Entropy',  'EigenvectorCentrality',
-                        'Pagerank',  'G_residuals',  'Vol_pp', 'Log_pop_density'].mean().reset_index()
+        cdr = cdr_dhs.groupby(adm)[ 'Deg_central', 'Entropy',  'Eig_central',
+                        'Pagerank',  'G_resids',  'Vol_pp', 'Log_pop_density'].mean().reset_index()
         dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
         return merge(cdr, dhs, adm)
 
@@ -112,16 +110,16 @@ def output_model(country, model, adm, response):
         cdr_dhs = data[[adm,
                         'Log_pop_density',
                         '%sSL' % response,
-                        'Entropy', 'Degree_centrality', 'EigenvectorCentrality',
-                        'Pagerank',  'G_residuals',  'Vol_pp',
+                        'Entropy', 'Deg_central', 'Eig_central',
+                        'Pagerank',  'G_resids',  'Vol_pp',
                         response]].dropna()
 
         cdr_dhs = normalise(cdr_dhs, adm)
 
         cdr = cdr_dhs.groupby(adm)['Log_pop_density',
                                    '%sSL' % response,
-                                    'Entropy', 'Degree_centrality', 'EigenvectorCentrality',
-                        'Pagerank',  'G_residuals', 'Vol_pp'].mean().reset_index()
+                                   'Entropy', 'Deg_central', 'Eig_central',
+                                   'Pagerank',  'G_resids', 'Vol_pp'].mean().reset_index()
         dhs = cdr_dhs.groupby(adm)[response].mean().reset_index()
         return merge(cdr, dhs, adm)
 
@@ -162,6 +160,8 @@ def stepwise_regression(country, response):
     model_table = PrettyTable()
     model_table.field_names = ['Model'] + adms
 
+    r_sq = []
+
     for model in models:
         formulas, r2 = [], []
 
@@ -169,7 +169,8 @@ def stepwise_regression(country, response):
             data = output_model(country, model, adm, response)
 
             selected = forward_selected(data, response)
-            print adm, response, model, selected.summary()
+            # print adm, response, model
+            r_sq.append(selected.rsquared_adj)
 
 
 
@@ -180,7 +181,7 @@ def stepwise_regression(country, response):
                              'Model: %s\nR^2-adj: %f\n' % (formulas[1], r2[1]),
                              'Model: %s\nR^2-adj: %f\n' % (formulas[2], r2[2]),
                              'Model: %s\nR^2-adj: %f\n' % (formulas[3], r2[3])])
-        print r2
+
     print model_table
     return model_table
 
